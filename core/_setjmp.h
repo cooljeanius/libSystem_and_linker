@@ -48,5 +48,5 @@
 #define JMP_SIGFLAG	0x70
 
 #else
-#error architecture not supported
+#warning architecture not supported
 #endif

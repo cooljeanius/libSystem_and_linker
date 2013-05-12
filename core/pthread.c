@@ -270,7 +270,7 @@ _pthread_allocate_stack(pthread_attr_t *attrs, void **stack)
     vm_address_t stackaddr;
     size_t guardsize;
 
-    assert(attrs->stacksize >= PTHREAD_STACK_MIN);
+    assert(attrs->stacksize >= PTHREAD_STACK_HINT);
     if (attrs->stackaddr != NULL) {
 	/* No guard pages setup in this case */
         assert(((uintptr_t)attrs->stackaddr % vm_page_size) == 0);
@@ -309,7 +309,7 @@ _pthread_create_pthread_onstack(pthread_attr_t *attrs, void **stack, pthread_t *
     vm_address_t stackaddr;
     size_t guardsize, allocsize;
 
-	assert(attrs->stacksize >= PTHREAD_STACK_MIN);
+	assert(attrs->stacksize >= PTHREAD_STACK_HINT);
 
     if (attrs->stackaddr != NULL) {
 	/* No guard pages setup in this case */
@@ -738,7 +738,7 @@ pthread_attr_getstacksize(const pthread_attr_t *attr, size_t *stacksize)
 int
 pthread_attr_setstacksize(pthread_attr_t *attr, size_t stacksize)
 {
-    if ((attr->sig == _PTHREAD_ATTR_SIG) && ((stacksize % vm_page_size) == 0) && (stacksize >= PTHREAD_STACK_MIN)) {
+    if ((attr->sig == _PTHREAD_ATTR_SIG) && ((stacksize % vm_page_size) == 0) && (stacksize >= PTHREAD_STACK_HINT)) {
         attr->stacksize = stacksize;
         return (0);
     } else {
@@ -766,7 +766,7 @@ pthread_attr_setstack(pthread_attr_t *attr, void *stackaddr, size_t stacksize)
 {
     if ((attr->sig == _PTHREAD_ATTR_SIG) && 
 	(((uintptr_t)stackaddr % vm_page_size) == 0) && 
-	 ((stacksize % vm_page_size) == 0) && (stacksize >= PTHREAD_STACK_MIN)) {
+	 ((stacksize % vm_page_size) == 0) && (stacksize >= PTHREAD_STACK_HINT)) {
 		attr->stackaddr = (void *)((uintptr_t)stackaddr + stacksize);
         	attr->stacksize = stacksize;
         	attr->freeStackOnExit = 0;
@@ -826,7 +826,7 @@ _pthread_body(pthread_t self)
 void
 _pthread_start(pthread_t self, mach_port_t kport, void *(*fun)(void *), void * funarg, size_t stacksize, unsigned int pflags)
 {
-	printf("_pthread_start(%p, %d, %p, %p, %d, %d) \n", self, kport, fun, funarg, stacksize, pflags);
+	printf("_pthread_start(%p, %d, %p, %p, %zd, %d) \n", self, kport, fun, funarg, stacksize, pflags);
 	
 	int ret = 0;
 	printf("\n ret = 0 \n"); // statement for debugging (also so something uses the variable "ret"
@@ -2235,7 +2235,7 @@ _pthread_setcancelstate_exit(pthread_t self, void * value_ptr, int conforming)
 	LOCK(self->lock);
 	self->cancel_state &= ~(_PTHREAD_CANCEL_STATE_MASK | _PTHREAD_CANCEL_TYPE_MASK);
 	self->cancel_state |= (PTHREAD_CANCEL_DISABLE | PTHREAD_CANCEL_DEFERRED);
-	if ((value_ptr == PTHREAD_CANCELED)) {
+	if (value_ptr == PTHREAD_CANCELED) {
 // 4597450: begin
 		self->detached |= _PTHREAD_WASCANCEL;
 // 4597450: end

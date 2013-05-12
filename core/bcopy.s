@@ -34,7 +34,7 @@
  * ARMv5 and ARMv6 implementation                                            *
  *****************************************************************************/
  
-#include <arm/arch.h>
+#include "arm/arch.h"
 
 .text
 .align 2

@@ -22,7 +22,7 @@
  */
 
 #include "asm_help.h"
-#include <arm/arch.h>
+#include "arm/arch.h"
 
 .text
 

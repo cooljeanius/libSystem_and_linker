@@ -2,7 +2,7 @@
  * armv7
  */
 
-#include <arm/arch.h>
+#include "arm/arch.h"
 
         .text
         .align 2

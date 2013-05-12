@@ -1212,7 +1212,6 @@ _new_pthread_mutex_lock(pthread_mutex_t *omutex)
 #if _KSYN_TRACE_
 	(void)__kdebug_trace(_KSYN_TRACE_UM_LOCK | DBG_FUNC_NONE, (uint32_t)mutex, 1, 0, 0, 0);
 #endif
-loop:
 #if  USE_COMPAGE /* [ */
 
 	mytid = (uint64_t)((uintptr_t)pthread_self());

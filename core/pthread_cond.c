@@ -753,7 +753,6 @@ _new_pthread_cond_destroy_locked(pthread_cond_t * ocond)
 	if (cond->sig == _PTHREAD_COND_SIG)
 	{
 		COND_GETSEQ_ADDR(cond, c_lseqcnt, c_useqcnt);
-retry:
 		lgenval = *c_lseqcnt;
 		ugenval = *c_useqcnt;
 		if (lgenval == ugenval)

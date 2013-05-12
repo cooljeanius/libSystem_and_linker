@@ -963,7 +963,6 @@ loop:
 	rw_wc = *wcaddr;
 	
 
-loop1:
 	if ((lgenval & PTHRW_COUNT_MASK) == (ugenval & PTHRW_COUNT_MASK)) {
 		retry_count++;
 		sched_yield();

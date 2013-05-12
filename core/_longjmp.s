@@ -30,7 +30,7 @@
 
 #include "asm_help.h"
 #include "_setjmp.h"
-#include <arm/arch.h>
+#include "arm/arch.h"
 
 /*	int _longjmp(jmp_buf env, int val); */
             

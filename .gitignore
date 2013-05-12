@@ -7,3 +7,4 @@ build
 core/.DS_Store
 core/arm_math/.DS_Store
 core/Compiler_RT/.DS_Store
+*xcuserdata*

@@ -21,7 +21,7 @@
  * @APPLE_LICENSE_HEADER_END@
  */
 #include "pthread_machdep.h"
-#include <arm/arch.h>
+#include "arm/arch.h"
 
         .text
         .align 4

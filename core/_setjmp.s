@@ -30,7 +30,7 @@
 
 #include "asm_help.h"
 #include "_setjmp.h"
-#include <arm/arch.h>
+#include "arm/arch.h"
 
 ENTRY_POINT(__setjmp)
 	stmia	r0!, { r4-r8, r10-r11, sp, lr }

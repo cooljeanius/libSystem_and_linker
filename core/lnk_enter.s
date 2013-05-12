@@ -10,7 +10,7 @@
 
 
 #ifndef __arm__
-	#error Only ARM architecture is supported.
+	#warning Only ARM architecture is supported.
 #endif
 
 .data

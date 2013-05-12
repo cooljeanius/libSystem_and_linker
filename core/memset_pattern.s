@@ -3,7 +3,7 @@
  * @APPLE_LICENSE_HEADER@
  */
 
-#include <arm/arch.h>
+#include "arm/arch.h"
 #include <mach/machine/asm.h>
 
 /* 

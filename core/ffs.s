@@ -21,7 +21,7 @@
  * @APPLE_LICENSE_HEADER_END@
  */
 
-#include <arm/arch.h>
+#include "arm/arch.h"
 
 #ifdef _ARM_ARCH_5
 	.text
@@ -46,5 +46,5 @@ _flsl:
 	rsb		r0, r0, #32
 	bx		lr
 #else
-#error need to define ffs for this architecture
+#warning need to define ffs for this architecture
 #endif

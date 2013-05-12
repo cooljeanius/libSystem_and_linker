@@ -19,7 +19,7 @@
 // int   bcmp(void *src1, void *src2, size_t length);
 // int memcmp(void *src1, void *src2, size_t length);
 
-#include <arm/arch.h>
+#include "arm/arch.h"
 
     .text
     .syntax unified
