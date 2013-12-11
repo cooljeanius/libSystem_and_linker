@@ -12,14 +12,14 @@
 
 bool Image::dependenciesInitialized()
 {
-	for (int i = 0; i < fDepCount; i++) 
+	for (int i = 0; i < fDepCount; i++)
 	{
 		Image* dep = fDependencies[i];
-		
+
 		if (!dep->fHasInitialized)
 			return false;
 	}
-	
+
 	return true;
 }
 
@@ -28,14 +28,14 @@ void Image::init() {
 
 bool Image::dependsOn(Image* image)
 {
-	for (int i = 0; i < fDepCount; i++) 
+	for (int i = 0; i < fDepCount; i++)
 	{
 		if (fDependencies[i] == image)
 		{
 			return true;
 		}
 	}
-	
+
 	return false;
 }
 
@@ -112,8 +112,8 @@ const char* Image::getShortName()
 	}
 	if (fFilePath != NULL) {
 		const char* s = strrchr(fFilePath, '/');
-		if (s != NULL) 
+		if (s != NULL)
 			return &s[1];
 	}
-	return fFilePath; 
+	return fFilePath;
 }

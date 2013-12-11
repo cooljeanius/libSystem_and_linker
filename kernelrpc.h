@@ -16,7 +16,6 @@
 #define kernel_rpc(x) _kernelrpc_##x##_trap
 
 
-
 #pragma mark Structures
 /********************************************************/
 

@@ -1,7 +1,9 @@
 #include <arm/arch.h>
 
 #define	__APPLE_API_PRIVATE
-//#include <machine/cpu_capabilities.h>
+#ifdef HAVE_MACHINE_CPU_CAPABILITIES_H
+#include <machine/cpu_capabilities.h>
+#endif
 #undef	__APPLE_API_PRIVATE
 
 // This routine is never called directly by user code, jumped from kernel

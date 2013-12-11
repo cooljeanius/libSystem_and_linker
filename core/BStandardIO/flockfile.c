@@ -51,6 +51,7 @@
 #include <pthread.h>
 #include "OSLog.h"
 #include <string.h>
+#include <stdint.h>
 #include <stdlib.h>
 #include <sys/types.h>
 

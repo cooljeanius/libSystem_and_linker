@@ -13,6 +13,7 @@
 #include "dlmalloc.h"
 #include "OSThread.h"
 #include <stdarg.h>
+#include <stdint.h>
 #include "OSLog.h"
 
 #define MAX_ZONES 1024
@@ -20,7 +21,7 @@
 typedef struct {
 	/* base */
     malloc_zone_t basic_zone;
-	
+
 	/* our shit */
     mspace memory_space; /* dlmalloc's mspace */
 	boolean_t global_zone; /* if this is set, use global funcs */
@@ -46,7 +47,7 @@ int XXX_mspace_has_pointer(mspace msp, void* ptr);
  */
 OSMemoryZone* _OSGetFirstAvailableMemoryZone(void) {
 	lll_lock(&malloc_lock);
-	
+
 	OSMemoryZone* osm = NULL;
 	for (int i = 0; i < MAX_ZONES; i++) {
 		OSMemoryZone* tosm = &zones[i];
@@ -54,31 +55,31 @@ OSMemoryZone* _OSGetFirstAvailableMemoryZone(void) {
 			osm = tosm;
 		}
 	}
-	
+
 	if (osm != NULL) {
 		osm->registred = TRUE;
 	}
 	else {
 		OSHalt("out of avail malloc zones (max: %d)", MAX_ZONES);
 	}
-	
+
 	lll_unlock(&malloc_lock);
-	
+
 	return (OSMemoryZone*)osm;
 }
 
 void _OSInitializeMemoryZones(void) {
 	/* create the default memory zone */
-	
+
 	if (default_zone != NULL) {
 		OSHalt("default_zone already present!");
 	}
-	
+
 	/* 0xfee1dead is the magic that stops the create thing from creating a mspace */
 	default_zone = (OSMemoryZone*)malloc_create_zone(0, 0xfee1dead);
 	default_zone->global_zone = TRUE;
 	default_zone->basic_zone.zone_name = "DefaultMallocZone";
-	
+
 	OSLog("_OSInitializeMemoryZones: all set, %d zones inited, default zone @ %p", MAX_ZONES, default_zone);
 }
 
@@ -86,13 +87,13 @@ malloc_zone_t *
 malloc_zone_from_ptr(const void *ptr)
 {
 	OSLog("malloc_zone_from_ptr(%p): searching ... ", ptr);
-	
+
 	lll_lock(&malloc_lock);
-	
+
 	OSMemoryZone* osm = NULL;
 	for (int i = 0; i < MAX_ZONES; i++) {
 		OSMemoryZone* tosm = &zones[i];
-		
+
 		if (tosm->registred && tosm->memory_space != NULL) {
 			if (XXX_mspace_has_pointer(tosm->memory_space, (void*)ptr))
 			{
@@ -101,9 +102,9 @@ malloc_zone_from_ptr(const void *ptr)
 			}
 		}
 	}
-	
+
 	lll_unlock(&malloc_lock);
-	
+
 	if (osm == NULL) {
 		osm = default_zone;
 		OSLog("malloc_zone_from_ptr(%p): no hits, returinig default_zone", ptr);
@@ -111,7 +112,7 @@ malloc_zone_from_ptr(const void *ptr)
 	else {
 		OSLog("malloc_zone_from_ptr(%p): found zone [%p] ", ptr, osm);
 	}
-	
+
 	return (malloc_zone_t*)osm;
 }
 
@@ -131,15 +132,15 @@ void malloc_set_zone_name(malloc_zone_t *zone, const char *name) {
 	OSLog("malloc_set_zone_name(%p, %s)", zone, name);
 }
 
-void malloc_printf(const char* format, ...) 
+void malloc_printf(const char* format, ...)
 {
 	printf("[Malloc]: ");
-	
+
 	va_list	list;
 	va_start(list, format);
 	vfprintf(stdout, format, list);
 	va_end(list);
-	
+
 	fflush(stdout);
 }
 
@@ -150,7 +151,7 @@ unsigned int malloc_zone_batch_malloc(malloc_zone_t *zone, size_t size, void **r
 
 void __reserved_malloc_1() {
 	OSHalt("called a reserved function");
-} 
+}
 
 
 /*
@@ -163,7 +164,7 @@ Impl_malloc_create_zone(vm_size_t start_size, unsigned flags) {
 
 void
 Impl_malloc_destroy_zone(malloc_zone_t *zone) {
-	
+
 }
 
 void *
@@ -234,12 +235,12 @@ Impl_malloc_zone_free(malloc_zone_t *zone, void *ptr) {
 
 
 /*
-	Abstract. 
+	Abstract.
  */
 malloc_zone_t *
 malloc_create_zone(vm_size_t start_size, unsigned flags) {
 	OSMemoryZone* osm = _OSGetFirstAvailableMemoryZone();
-	
+
 	/* mkay, get default impls */
 	osm->basic_zone.calloc = (void*)Impl_malloc_zone_calloc;
 	osm->basic_zone.free = (void*)Impl_malloc_zone_free;
@@ -247,17 +248,17 @@ malloc_create_zone(vm_size_t start_size, unsigned flags) {
 	osm->basic_zone.valloc = (void*)Impl_malloc_zone_valloc;
 	osm->basic_zone.memalign = (void*)Impl_malloc_zone_memalign;
 	osm->basic_zone.realloc = (void*)Impl_malloc_zone_realloc;
-	
+
 	if (flags != 0xfee1dead) {
 		/* make a mspace */
 		osm->memory_space = create_mspace(start_size, FALSE);
 	}
-	
+
 	OSLog("malloc_create_zone: created zone {size=%d, space=%p, addr=%p}",
 		  start_size,
 		  osm->memory_space,
 		  osm);
-	
+
 	return (malloc_zone_t*)osm;
 }
 

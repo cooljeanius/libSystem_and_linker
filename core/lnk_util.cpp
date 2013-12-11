@@ -19,7 +19,7 @@ int read_at(int fd, void* buf, size_t len, uint32_t offset) {
 
 const struct nlist* binary_search_toc(const char* key,
 									  const char stringPool[],
-									  const struct nlist symbols[], 
+									  const struct nlist symbols[],
 									  const struct dylib_table_of_contents toc[],
 									  uint32_t symbolCount,
 									  uint32_t hintIndex)
@@ -39,11 +39,11 @@ const struct nlist* binary_search_toc(const char* key,
 		if ( cmp == 0 )
 			return pivot;
 		if ( cmp > 0 ) {
-			// key > pivot 
+			// key > pivot
 			low = mid + 1;
 		}
 		else {
-			// key < pivot 
+			// key < pivot
 			high = mid - 1;
 		}
 	}
@@ -64,13 +64,13 @@ const struct nlist* binary_search(const char* key,
 		if ( cmp == 0 )
 			return pivot;
 		if ( cmp > 0 ) {
-			// key > pivot 
+			// key > pivot
 			// move base to symbol after pivot
 			base = &pivot[1];
-			--n; 
+			--n;
 		}
 		else {
-			// key < pivot 
+			// key < pivot
 			// keep same base
 		}
 	}
@@ -147,9 +147,9 @@ uintptr_t read_uleb128(const uint8_t*& p, const uint8_t* end)
 	do {
 		if (p == end)
 			lnk::halt("malformed uleb128");
-		
+
 		uint64_t slice = *p & 0x7f;
-		
+
 		if (bit > 63)
 			lnk::halt("uleb128 too big for uint64, bit=%d, result=0x%0llX", bit, result);
 		else {

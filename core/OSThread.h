@@ -10,9 +10,15 @@
 #ifndef core_OSThread_h
 #define core_OSThread_h
 
+#ifdef HAVE_SYS_TIME_H
+#include <sys/time.h>
+#elif defined(HAVE_TIME_H)
+#include <time.h>
+#endif
+
 typedef int OSLowLock;
 
-int lll_futex_timed_wait(OSLowLock* futex,
+extern int lll_futex_timed_wait(OSLowLock* futex,
 						 int value,
 						 const struct timespec *timeout);
 

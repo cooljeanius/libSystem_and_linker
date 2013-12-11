@@ -2,14 +2,14 @@
  * Copyright (c) 2000-2003, 2007, 2008 Apple Inc. All rights reserved.
  *
  * @APPLE_LICENSE_HEADER_START@
- * 
+ *
  * This file contains Original Code and/or Modifications of Original Code
  * as defined in and that are subject to the Apple Public Source License
  * Version 2.0 (the 'License'). You may not use this file except in
  * compliance with the License. Please obtain a copy of the License at
  * http://www.opensource.apple.com/apsl/ and read it before using this
  * file.
- * 
+ *
  * The Original Code and all software distributed under the License are
  * distributed on an 'AS IS' basis, WITHOUT WARRANTY OF ANY KIND, EITHER
  * EXPRESS OR IMPLIED, AND APPLE HEREBY DISCLAIMS ALL SUCH WARRANTIES,
@@ -17,28 +17,28 @@
  * FITNESS FOR A PARTICULAR PURPOSE, QUIET ENJOYMENT OR NON-INFRINGEMENT.
  * Please see the License for the specific language governing rights and
  * limitations under the License.
- * 
+ *
  * @APPLE_LICENSE_HEADER_END@
  */
 /*
- * Copyright 1996 1995 by Open Software Foundation, Inc. 1997 1996 1995 1994 1993 1992 1991  
- *              All Rights Reserved 
- *  
- * Permission to use, copy, modify, and distribute this software and 
+ * Copyright 1996 1995 by Open Software Foundation, Inc. 1997 1996 1995 1994 1993 1992 1991
+ *              All Rights Reserved
+ *
+ * Permission to use, copy, modify, and distribute this software and
  * its documentation for any purpose and without fee is hereby granted,
- * provided that the above copyright notice appears in all copies and 
- * that both the copyright notice and this permission notice appear in 
- * supporting documentation. 
- *  
- * OSF DISCLAIMS ALL WARRANTIES WITH REGARD TO THIS SOFTWARE 
- * INCLUDING ALL IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS 
- * FOR A PARTICULAR PURPOSE. 
- *  
- * IN NO EVENT SHALL OSF BE LIABLE FOR ANY SPECIAL, INDIRECT, OR 
- * CONSEQUENTIAL DAMAGES OR ANY DAMAGES WHATSOEVER RESULTING FROM 
- * LOSS OF USE, DATA OR PROFITS, WHETHER IN ACTION OF CONTRACT, 
- * NEGLIGENCE, OR OTHER TORTIOUS ACTION, ARISING OUT OF OR IN CONNECTION 
- * WITH THE USE OR PERFORMANCE OF THIS SOFTWARE. 
+ * provided that the above copyright notice appears in all copies and
+ * that both the copyright notice and this permission notice appear in
+ * supporting documentation.
+ *
+ * OSF DISCLAIMS ALL WARRANTIES WITH REGARD TO THIS SOFTWARE
+ * INCLUDING ALL IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS
+ * FOR A PARTICULAR PURPOSE.
+ *
+ * IN NO EVENT SHALL OSF BE LIABLE FOR ANY SPECIAL, INDIRECT, OR
+ * CONSEQUENTIAL DAMAGES OR ANY DAMAGES WHATSOEVER RESULTING FROM
+ * LOSS OF USE, DATA OR PROFITS, WHETHER IN ACTION OF CONTRACT,
+ * NEGLIGENCE, OR OTHER TORTIOUS ACTION, ARISING OUT OF OR IN CONNECTION
+ * WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
  */
 /*
  * MkLinux
@@ -137,7 +137,7 @@ int __kdebug_trace(uint32_t, uint32_t, uint32_t, uint32_t, uint32_t, uint32_t);
 /*
  * Destroy a condition variable.
  */
-int       
+int
 pthread_cond_destroy(pthread_cond_t *cond)
 {
 	int ret;
@@ -173,7 +173,7 @@ pthread_cond_destroy(pthread_cond_t *cond)
 /*
  * Signal a condition variable, waking up all threads waiting for it.
  */
-int       
+int
 pthread_cond_broadcast(pthread_cond_t *cond)
 {
 	kern_return_t kern_res;
@@ -193,7 +193,7 @@ pthread_cond_broadcast(pthread_cond_t *cond)
 		{
 			_pthread_cond_init(cond, NULL, 0);
 			res = 0;
-		} else 
+		} else
 			res = EINVAL;  /* Not a condition variable */
 		UNLOCK(cond->lock);
 		return (res);
@@ -231,7 +231,7 @@ pthread_cond_broadcast(pthread_cond_t *cond)
 /*
  * Signal a condition variable, waking a specified thread.
  */
-int       
+int
 pthread_cond_signal_thread_np(pthread_cond_t *cond, pthread_t thread)
 {
 	kern_return_t kern_res;
@@ -247,11 +247,11 @@ pthread_cond_signal_thread_np(pthread_cond_t *cond, pthread_t thread)
 	{
 		int ret;
 
-		if (cond->sig == _PTHREAD_COND_SIG_init) 
+		if (cond->sig == _PTHREAD_COND_SIG_init)
 		{
 			_pthread_cond_init(cond, NULL, 0);
 			ret = 0;
-		} else 
+		} else
 			ret = EINVAL; /* Not a condition variable */
 		UNLOCK(cond->lock);
 		return (ret);
@@ -319,7 +319,7 @@ _pthread_cond_add(pthread_cond_t *cond, pthread_mutex_t *mutex)
 	if ((c = mutex->busy) != (pthread_cond_t *)NULL)
 	{
 		c->prev = cond;
-	} 
+	}
 	cond->next = c;
 	cond->prev = (pthread_cond_t *)NULL;
 	mutex->busy = cond;
@@ -341,7 +341,7 @@ _pthread_cond_remove(pthread_cond_t *cond, pthread_mutex_t *mutex)
 	if ((p = cond->prev) != (pthread_cond_t *)NULL)
 	{
 		p->next = cond->next;
-	} 
+	}
 	else
 	{ /* This is the first in the list */
 		mutex->busy = n;
@@ -354,7 +354,7 @@ _pthread_cond_remove(pthread_cond_t *cond, pthread_mutex_t *mutex)
 	}
 }
 
-static void 
+static void
 cond_cleanup(void *arg)
 {
     pthread_cond_t *cond = (pthread_cond_t *)arg;
@@ -393,8 +393,8 @@ cond_cleanup(void *arg)
  * If isconforming < 0, we skip the _pthread_testcancel(), but keep the
  * remaining conforming behavior..
  */
-__private_extern__ int       
-_pthread_cond_wait(pthread_cond_t *cond, 
+__private_extern__ int
+_pthread_cond_wait(pthread_cond_t *cond,
 		   pthread_mutex_t *mutex,
 		   const struct timespec *abstime,
 		   int isRelative,
@@ -525,7 +525,7 @@ extern void _pthread_testcancel(pthread_t thread, int isconforming);
 		return (EINVAL);
 	}
 	UNLOCK(cond->lock);
-	
+
 	LOCK(mutex->lock);
 	if (--mutex->mtxopts.options.lock_count == 0)
 	{
@@ -592,7 +592,7 @@ extern void _pthread_testcancel(pthread_t thread, int isconforming);
 				/*
 				**  EINTR can be treated as a spurious wakeup unless we were canceled.
 				*/
-				return 0;	
+				return 0;
 				}
 			return EINVAL;
     	}
@@ -601,8 +601,8 @@ extern void _pthread_testcancel(pthread_t thread, int isconforming);
 }
 
 
-int       
-pthread_cond_timedwait_relative_np(pthread_cond_t *cond, 
+int
+pthread_cond_timedwait_relative_np(pthread_cond_t *cond,
 		       pthread_mutex_t *mutex,
 		       const struct timespec *abstime)
 {
@@ -617,7 +617,7 @@ pthread_condattr_init(pthread_condattr_t *attr)
         return (0);
 }
 
-int       
+int
 pthread_condattr_destroy(pthread_condattr_t *attr)
 {
         attr->sig = _PTHREAD_NO_SIG;  /* Uninitialized */
@@ -639,7 +639,7 @@ pthread_condattr_getpshared(const pthread_condattr_t *attr,
 }
 
 
-__private_extern__ int       
+__private_extern__ int
 _pthread_cond_init(pthread_cond_t *cond,
 		  const pthread_condattr_t *attr,
 		  int conforming)
@@ -694,7 +694,7 @@ pthread_condattr_setpshared(pthread_condattr_t * attr, int pshared)
 
 #if  defined(__i386__) || defined(__x86_64__)
 
-__private_extern__ int       
+__private_extern__ int
 _new_pthread_cond_init(pthread_cond_t *ocond,
 		  const pthread_condattr_t *attr,
 		  int conforming)
@@ -732,11 +732,11 @@ _new_pthread_cond_destroy(pthread_cond_t * ocond)
 	LOCK(cond->lock);
 	ret = _new_pthread_cond_destroy_locked(ocond);
 	UNLOCK(cond->lock);
-	
+
 	return(ret);
 }
 
-int       
+int
 _new_pthread_cond_destroy_locked(pthread_cond_t * ocond)
 {
 	npthread_cond_t *cond = (npthread_cond_t *)ocond;
@@ -760,17 +760,19 @@ retry:
 		{
 			cond->sig = _PTHREAD_NO_SIG;
 			ret = 0;
-		} else
+		} else {
 			ret = EBUSY;
-	} else
+		}
+	} else {
 		ret = EINVAL; /* Not an initialized condition variable structure */
+	}
 	return (ret);
 }
 
 /*
  * Signal a condition variable, waking up all threads waiting for it.
  */
-int       
+int
 _new_pthread_cond_broadcast(pthread_cond_t *ocond)
 {
 	npthread_cond_t * cond = (npthread_cond_t *)ocond;
@@ -814,17 +816,17 @@ retry:
 	lgenval = *c_lseqcnt;
 	ugenval = *c_useqcnt;
 	diffgen = lgenval - ugenval;	/* pendig waiters */
- 
+
 	if (diffgen <= 0) {
 		return(0);
 #if _KSYN_TRACE_
 	(void)__kdebug_trace(_KSYN_TRACE_UM_CVBRD | DBG_FUNC_END, (uint32_t)cond, 0, 0, 0, 0);
 #endif
 	}
-	
+
 	mutex = cond->busy;
-	
-	if (OSAtomicCompareAndSwap32(ugenval, ugenval+diffgen, (volatile int *)c_useqcnt) != TRUE) 
+
+	if (OSAtomicCompareAndSwap32(ugenval, ugenval+diffgen, (volatile int *)c_useqcnt) != TRUE)
 		goto retry;
 
 #ifdef COND_MTX_WAITQUEUEMOVE
@@ -834,25 +836,25 @@ retry:
 	(void)__kdebug_trace(_KSYN_TRACE_UM_CVBRD | DBG_FUNC_NONE, (uint32_t)cond, 1, diffgen, 0, 0);
 #endif
 		(void)__mtx_holdlock(mutex, diffgen, &flags, &pmtx, &mgen, &ugen);
-		mutexrefs = 1;	
+		mutexrefs = 1;
 	} else {
 		if (cond->pshared != PTHREAD_PROCESS_SHARED)
 			flags = _PTHREAD_MTX_OPT_NOHOLD;
 		else
 			flags = _PTHREAD_MTX_OPT_NOHOLD | _PTHREAD_MTX_OPT_PSHARED;
 		mgen = ugen = 0;
-		mutexrefs = 0;	
+		mutexrefs = 0;
 		pmtx = NULL;
 	}
 #else /* COND_MTX_WAITQUEUEMOVE */
-	
+
 	if (cond->pshared != PTHREAD_PROCESS_SHARED)
 		flags = _PTHREAD_MTX_OPT_NOHOLD;
 	else
 		flags = _PTHREAD_MTX_OPT_NOHOLD | _PTHREAD_MTX_OPT_PSHARED;
 	pmtx = NULL;
 	mgen = ugen = 0;
-	mutexrefs = 0;	
+	mutexrefs = 0;
 #endif /* COND_MTX_WAITQUEUEMOVE */
 
 #if _KSYN_TRACE_
@@ -888,7 +890,7 @@ retry:
 /*
  * Signal a condition variable, waking a specified thread.
  */
-int       
+int
 _new_pthread_cond_signal_thread_np(pthread_cond_t *ocond, pthread_t thread)
 {
 	npthread_cond_t * cond = (npthread_cond_t *)ocond;
@@ -933,10 +935,10 @@ retry:
 #endif
 		return(0);
 	}
-	
+
 	mutex = cond->busy;
 
-	if (OSAtomicCompareAndSwap32(ugenval, ugenval+1, (volatile int *)c_useqcnt) != TRUE) 
+	if (OSAtomicCompareAndSwap32(ugenval, ugenval+1, (volatile int *)c_useqcnt) != TRUE)
 		goto retry;
 
 #ifdef COND_MTX_WAITQUEUEMOVE
@@ -960,10 +962,10 @@ retry:
 	else
 		flags = _PTHREAD_MTX_OPT_NOHOLD | _PTHREAD_MTX_OPT_PSHARED;
 	mgen = ugen = 0;
-	mutexrefs = 0;	
+	mutexrefs = 0;
 
 #endif /* COND_MTX_WAITQUEUEMOVE */
-	
+
 #if _KSYN_TRACE_
 	(void)__kdebug_trace(_KSYN_TRACE_UM_CVSIG | DBG_FUNC_NONE, (uint32_t)cond, 3, lgenval, ugenval+1, 0);
 #endif
@@ -988,7 +990,7 @@ retry:
 	(void)__kdebug_trace(_KSYN_TRACE_UM_CVSIG | DBG_FUNC_NONE, (uint32_t)cond, 5, 0, 0, 0);
 #endif
 	}
-			
+
 #if _KSYN_TRACE_
 	(void)__kdebug_trace(_KSYN_TRACE_UM_CVSIG | DBG_FUNC_END, (uint32_t)cond, 0, 0, 0, 0);
 #endif
@@ -1016,8 +1018,8 @@ _new_pthread_cond_signal(pthread_cond_t *cond)
  * If isconforming < 0, we skip the _pthread_testcancel(), but keep the
  * remaining conforming behavior..
  */
-__private_extern__ int       
-__new_pthread_cond_wait(pthread_cond_t *ocond, 
+__private_extern__ int
+__new_pthread_cond_wait(pthread_cond_t *ocond,
 		   pthread_mutex_t *omutex,
 		   const struct timespec *abstime,
 		   int isRelative,
@@ -1114,11 +1116,11 @@ extern void _pthread_testcancel(pthread_t thread, int isconforming);
 	}
 
 	cond->busy = mutex;
-	pmtx = mutex; 
+	pmtx = mutex;
 
 	ugenval = *c_useqcnt;
 	lgenval = OSAtomicIncrement32((volatile int32_t *)c_lseqcnt);
-	
+
 
 #if _KSYN_TRACE_
 	(void)__kdebug_trace(_KSYN_TRACE_UM_CVWAIT | DBG_FUNC_NONE, (uint32_t)cond, 1, lgenval, ugenval, 0);
@@ -1132,11 +1134,11 @@ extern void _pthread_testcancel(pthread_t thread, int isconforming);
 	}
 	if ((notify & 0xc0000000) != 0)
 		then.tv_nsec |= (notify & 0xc0000000);
-	
+
 #if _KSYN_TRACE_
 	(void)__kdebug_trace(_KSYN_TRACE_UM_CVWAIT | DBG_FUNC_NONE, (uint32_t)cond, 3, (uint32_t)mutex, 0, 0);
 #endif
-	
+
 	if (isconforming) {
 		pthread_cleanup_push(_new_cond_cleanup, (void *)cond);
 		updateval = __psynch_cvwait(ocond, lgenval, ugenval, (pthread_mutex_t *)npmtx, mtxgen, mtxugen, (uint64_t)then.tv_sec, (uint64_t)then.tv_nsec);
@@ -1188,7 +1190,7 @@ extern void _pthread_testcancel(pthread_t thread, int isconforming);
 			**  EINTR can be treated as a spurious wakeup unless we were canceled.
 			*/
 			retval = 0;
-		} else 
+		} else
 			retval =  EINVAL;
 
 		/* add unlock ref to show one less waiter */
@@ -1208,7 +1210,7 @@ extern void _pthread_testcancel(pthread_t thread, int isconforming);
 	return(retval);
 }
 
-static void 
+static void
 _new_cond_cleanup(void *arg)
 {
 	npthread_cond_t *cond = (npthread_cond_t *)arg;
@@ -1227,7 +1229,7 @@ _new_cond_cleanup(void *arg)
 
 // 4597450: end
     	mutex = cond->busy;
-	
+
 	/* add unlock ref to show one less waiter */
 	_new_cond_dropwait(cond);
 
@@ -1251,7 +1253,7 @@ _new_cond_dropwait(npthread_cond_t * cond)
 
 	/* to provide backwards compat for apps using united condtn vars */
 
-	if (sig != _PTHREAD_COND_SIG) 
+	if (sig != _PTHREAD_COND_SIG)
 		return;
 
 #if _KSYN_TRACE_
@@ -1269,8 +1271,8 @@ retry:
 #endif
 		return;
 	}
-	
-	if (OSAtomicCompareAndSwap32(ugenval, ugenval+1, (volatile int *)c_useqcnt) != TRUE) 
+
+	if (OSAtomicCompareAndSwap32(ugenval, ugenval+1, (volatile int *)c_useqcnt) != TRUE)
 		goto retry;
 
 	if (lgenval == ugenval+1) {
@@ -1292,7 +1294,7 @@ retry:
 		newval64 = 0;
 		OSAtomicCompareAndSwap64(oldval64, newval64, (volatile int64_t *)c_lseqcnt);
 	}
-			
+
 #if _KSYN_TRACE_
 	(void)__kdebug_trace(_KSYN_TRACE_UM_CVSIG | DBG_FUNC_END, (uint32_t)cond, 2, 0, 0xee, 0);
 #endif
@@ -1300,8 +1302,8 @@ retry:
 }
 
 
-int       
-_new_pthread_cond_timedwait_relative_np(pthread_cond_t *cond, 
+int
+_new_pthread_cond_timedwait_relative_np(pthread_cond_t *cond,
 		       pthread_mutex_t *mutex,
 		       const struct timespec *abstime)
 {
@@ -1309,15 +1311,15 @@ _new_pthread_cond_timedwait_relative_np(pthread_cond_t *cond,
 }
 
 
-int       
-_new_pthread_cond_wait(pthread_cond_t *cond, 
+int
+_new_pthread_cond_wait(pthread_cond_t *cond,
 		  pthread_mutex_t *mutex)
 {
 	return(__new_pthread_cond_wait(cond, mutex, 0, 0, 1));
 }
 
-int       
-_new_pthread_cond_timedwait(pthread_cond_t *cond, 
+int
+_new_pthread_cond_timedwait(pthread_cond_t *cond,
 		       pthread_mutex_t *mutex,
 		       const struct timespec *abstime)
 {
@@ -1328,7 +1330,7 @@ _new_pthread_cond_timedwait(pthread_cond_t *cond,
 
 #else /* !BUILDING_VARIANT */
 
-extern int _pthread_cond_wait(pthread_cond_t *cond, 
+extern int _pthread_cond_wait(pthread_cond_t *cond,
 			pthread_mutex_t *mutex,
 			const struct timespec *abstime,
 			int isRelative,
@@ -1344,7 +1346,7 @@ extern int _pthread_cond_wait(pthread_cond_t *cond,
  * We can't trust the lock, so initialize it first before taking
  * it.
  */
-int       
+int
 pthread_cond_init(pthread_cond_t *cond,
 		  const pthread_condattr_t *attr)
 {
@@ -1362,17 +1364,17 @@ pthread_cond_init(pthread_cond_t *cond,
 		return(_new_pthread_cond_init(cond, attr, conforming));
 	}
 #endif /* __i386__ || __x86_64__ */
-	
+
 	return (_pthread_cond_init(cond, attr, conforming));
 }
 
 /*
-int       
-pthread_cond_wait(pthread_cond_t *cond, 
+int
+pthread_cond_wait(pthread_cond_t *cond,
 		  pthread_mutex_t *mutex)
 
-int       
-pthread_cond_timedwait(pthread_cond_t *cond, 
+int
+pthread_cond_timedwait(pthread_cond_t *cond,
 		       pthread_mutex_t *mutex,
 		       const struct timespec *abstime)
 

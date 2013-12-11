@@ -8,7 +8,9 @@
 #include <stddef.h>
 #include <stdlib.h>
 #include <string.h>
+#ifdef HAVE_CRT_EXTERNS_H
 #include <crt_externs.h>
+#endif /* HAVE_CRT_EXTERNS_H */
 #include <errno.h>
 #include <sys/types.h>
 #include <fcntl.h>
@@ -27,7 +29,7 @@ int
 init__zone0(int should_set_errno)
 {
 	if (__zone0) return (0);
-    
+
 	__zone0 = malloc_create_zone(0, 0);
 	if (!__zone0) {
 		if (should_set_errno) {
@@ -48,7 +50,7 @@ char **environ;
 	int len, i;
 	const char *np;
 	char **p, *cp;
-    
+
 	if (name == NULL || environ == NULL)
 		return (NULL);
 	for (np = name; *np && *np != '='; ++np)
@@ -70,7 +72,7 @@ char*
 _getenvp(const char *name, char ***envp, void *state __unused)
 {
 	int offset;
-    
+
 	return (__findenv(name, &offset, *envp));
 }
 
@@ -79,7 +81,7 @@ getenv(name)
 const char *name;
 {
 	int offset;
-    
+
 	return (__findenv(name, &offset, *_NSGetEnviron()));
 }
 

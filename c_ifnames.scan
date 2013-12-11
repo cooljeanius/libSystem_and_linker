@@ -1,0 +1,7 @@
+HAVE_CRT_EXTERNS_H ./getsecbyname.c ./getsegbyname.c
+RLD ./getsecbyname.c ./getsegbyname.c ./swap.c
+__DYNAMIC__ ./getsecbyname.c ./getsegbyname.c
+__LITTLE_ENDIAN__ ./getsecbyname.c
+__LP64__ ./getsecbyname.c ./getsegbyname.c
+__OPENSTEP__ ./getsecbyname.c ./getsegbyname.c
+__arm__ ./NSSystemDirectories.c

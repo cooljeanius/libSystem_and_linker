@@ -6,7 +6,7 @@
  */
 
 /*
-	I swear, I know what I'm doing.
+ * Original author's note: I swear, I know what I am doing.
  */
 
 #include <unistd.h>
@@ -27,6 +27,9 @@
 #include <string.h>
 #include <termios.h>
 #include <sys/ioctl.h>
+#ifdef HAVE_VARARGS_H
+#include <varargs.h>
+#endif
 
 /* Shim Support */
 #include "linux_ioctl.h"
@@ -107,7 +110,7 @@ static void
 bsd_to_linux_termios(struct termios *bios, struct linux_termios *lios)
 {
 	int i;
-	
+
 #ifdef DEBUG
 	if (ldebug(ioctl)) {
 		printf("LINUX: BSD termios structure (input):\n");
@@ -120,7 +123,7 @@ bsd_to_linux_termios(struct termios *bios, struct linux_termios *lios)
 		printf("\n");
 	}
 #endif
-	
+
 	lios->c_iflag = 0;
 	if (bios->c_iflag & IGNBRK)
 		lios->c_iflag |= LINUX_IGNBRK;
@@ -148,7 +151,7 @@ bsd_to_linux_termios(struct termios *bios, struct linux_termios *lios)
 		lios->c_iflag |= LINUX_IXOFF;
 	if (bios->c_iflag & IMAXBEL)
 		lios->c_iflag |= LINUX_IMAXBEL;
-	
+
 	lios->c_oflag = 0;
 	if (bios->c_oflag & OPOST)
 		lios->c_oflag |= LINUX_OPOST;
@@ -156,7 +159,7 @@ bsd_to_linux_termios(struct termios *bios, struct linux_termios *lios)
 		lios->c_oflag |= LINUX_ONLCR;
 	if (bios->c_oflag & TAB3)
 		lios->c_oflag |= LINUX_XTABS;
-	
+
 	lios->c_cflag = bsd_to_linux_speed(bios->c_ispeed, sptab);
 	lios->c_cflag |= (bios->c_cflag & CSIZE) >> 4;
 	if (bios->c_cflag & CSTOPB)
@@ -173,7 +176,7 @@ bsd_to_linux_termios(struct termios *bios, struct linux_termios *lios)
 		lios->c_cflag |= LINUX_CLOCAL;
 	if (bios->c_cflag & CRTSCTS)
 		lios->c_cflag |= LINUX_CRTSCTS;
-	
+
 	lios->c_lflag = 0;
 	if (bios->c_lflag & ISIG)
 		lios->c_lflag |= LINUX_ISIG;
@@ -203,7 +206,7 @@ bsd_to_linux_termios(struct termios *bios, struct linux_termios *lios)
 		lios->c_lflag |= LINUX_PENDIN;
 	if (bios->c_lflag & IEXTEN)
 		lios->c_lflag |= LINUX_IEXTEN;
-	
+
 	for (i=0; i<LINUX_NCCS; i++)
 		lios->c_cc[i] = LINUX_POSIX_VDISABLE;
 	lios->c_cc[LINUX_VINTR] = bios->c_cc[VINTR];
@@ -222,14 +225,14 @@ bsd_to_linux_termios(struct termios *bios, struct linux_termios *lios)
 	lios->c_cc[LINUX_VDISCARD] = bios->c_cc[VDISCARD];
 	lios->c_cc[LINUX_VWERASE] = bios->c_cc[VWERASE];
 	lios->c_cc[LINUX_VLNEXT] = bios->c_cc[VLNEXT];
-	
+
 	for (i=0; i<LINUX_NCCS; i++) {
 		if (i != LINUX_VMIN && i != LINUX_VTIME &&
 		    lios->c_cc[i] == _POSIX_VDISABLE)
 			lios->c_cc[i] = LINUX_POSIX_VDISABLE;
 	}
 	lios->c_line = 0;
-	
+
 #ifdef DEBUG
 	if (ldebug(ioctl)) {
 		printf("LINUX: LINUX termios structure (output):\n");
@@ -248,7 +251,7 @@ static void
 linux_to_bsd_termios(struct linux_termios *lios, struct termios *bios)
 {
 	int i;
-	
+
 #ifdef DEBUG
 	if (ldebug(ioctl)) {
 		printf("LINUX: LINUX termios structure (input):\n");
@@ -261,7 +264,7 @@ linux_to_bsd_termios(struct linux_termios *lios, struct termios *bios)
 		printf("\n");
 	}
 #endif
-	
+
 	bios->c_iflag = 0;
 	if (lios->c_iflag & LINUX_IGNBRK)
 		bios->c_iflag |= IGNBRK;
@@ -289,7 +292,7 @@ linux_to_bsd_termios(struct linux_termios *lios, struct termios *bios)
 		bios->c_iflag |= IXOFF;
 	if (lios->c_iflag & LINUX_IMAXBEL)
 		bios->c_iflag |= IMAXBEL;
-	
+
 	bios->c_oflag = 0;
 	if (lios->c_oflag & LINUX_OPOST)
 		bios->c_oflag |= OPOST;
@@ -297,7 +300,7 @@ linux_to_bsd_termios(struct linux_termios *lios, struct termios *bios)
 		bios->c_oflag |= ONLCR;
 	if (lios->c_oflag & LINUX_XTABS)
 		bios->c_oflag |= TAB3;
-	
+
 	bios->c_cflag = (lios->c_cflag & LINUX_CSIZE) << 4;
 	if (lios->c_cflag & LINUX_CSTOPB)
 		bios->c_cflag |= CSTOPB;
@@ -313,7 +316,7 @@ linux_to_bsd_termios(struct linux_termios *lios, struct termios *bios)
 		bios->c_cflag |= CLOCAL;
 	if (lios->c_cflag & LINUX_CRTSCTS)
 		bios->c_cflag |= CRTSCTS;
-	
+
 	bios->c_lflag = 0;
 	if (lios->c_lflag & LINUX_ISIG)
 		bios->c_lflag |= ISIG;
@@ -343,7 +346,7 @@ linux_to_bsd_termios(struct linux_termios *lios, struct termios *bios)
 		bios->c_lflag |= PENDIN;
 	if (lios->c_lflag & LINUX_IEXTEN)
 		bios->c_lflag |= IEXTEN;
-	
+
 	for (i=0; i<NCCS; i++)
 		bios->c_cc[i] = _POSIX_VDISABLE;
 	bios->c_cc[VINTR] = lios->c_cc[LINUX_VINTR];
@@ -362,16 +365,16 @@ linux_to_bsd_termios(struct linux_termios *lios, struct termios *bios)
 	bios->c_cc[VDISCARD] = lios->c_cc[LINUX_VDISCARD];
 	bios->c_cc[VWERASE] = lios->c_cc[LINUX_VWERASE];
 	bios->c_cc[VLNEXT] = lios->c_cc[LINUX_VLNEXT];
-	
+
 	for (i=0; i<NCCS; i++) {
 		if (i != VMIN && i != VTIME &&
 		    bios->c_cc[i] == LINUX_POSIX_VDISABLE)
 			bios->c_cc[i] = _POSIX_VDISABLE;
 	}
-	
+
 	bios->c_ispeed = bios->c_ospeed =
 	linux_to_bsd_speed(lios->c_cflag & LINUX_CBAUD, sptab);
-	
+
 #ifdef DEBUG
 	if (ldebug(ioctl)) {
 		printf("LINUX: BSD termios structure (output):\n");
@@ -390,7 +393,7 @@ static void
 bsd_to_linux_termio(struct termios *bios, struct linux_termio *lio)
 {
 	struct linux_termios lios;
-	
+
 	bsd_to_linux_termios(bios, &lios);
 	lio->c_iflag = lios.c_iflag;
 	lio->c_oflag = lios.c_oflag;
@@ -405,7 +408,7 @@ linux_to_bsd_termio(struct linux_termio *lio, struct termios *bios)
 {
 	struct linux_termios lios;
 	int i;
-	
+
 	lios.c_iflag = lio->c_iflag;
 	lios.c_oflag = lio->c_oflag;
 	lios.c_cflag = lio->c_cflag;
@@ -426,23 +429,23 @@ int ioctl$BRIDGE$termios(int fd, unsigned long request, void* param)
 	struct linux_termio lio;
 	struct file *fp;
 	int error;
-	
+
 	//OSLog("ioctl$BRIDGE$termios");
-	
+
 	switch (request) {
 		case TIOCGETA:
 		{
 			if (logEverything) {
 				ioctl_log("termios: conv 'TIOCGETA'");
 			}
-			
+
 			error = platform_ioctl(fd, LINUX_TCGETS, &lios);
 			if (error) {
 				break;
 			}
-			
+
 			linux_to_bsd_termios(&lios, (struct termios*)param);
-			
+
 			break;
 		}
 
@@ -451,9 +454,9 @@ int ioctl$BRIDGE$termios(int fd, unsigned long request, void* param)
 			if (logEverything) {
 				ioctl_log("termios: conv 'TIOCSETA'");
 			}
-			
+
 			bsd_to_linux_termios((struct termios*)param, &lios);
-			
+
 			error = platform_ioctl(fd, LINUX_TCSETS, &lios);
 			if (error) {
 				break;
@@ -461,51 +464,51 @@ int ioctl$BRIDGE$termios(int fd, unsigned long request, void* param)
 
 			break;
 		}
-			
+
 		case TIOCSETAW:
 		{
 			if (logEverything) {
 				ioctl_log("termios: conv 'TIOCSETAW'");
 			}
-			
+
 			bsd_to_linux_termios((struct termios*)param, &lios);
-			
+
 			error = platform_ioctl(fd, LINUX_TCSETSW, &lios);
 			if (error) {
 				break;
 			}
-			
+
 			break;
 		}
-		
-#define failCase(x) case x: ioctl_log("termios: '%s' unimpl", #x); error = -1; break;			
+
+#define failCase(x) case x: ioctl_log("termios: '%s' unimpl", #x); error = -1; break;
 
 			failCase(TIOCSTOP);
 			failCase(TIOCSTART);
 			failCase(TIOCSTAT);
-			
+
 			//failCase(T);
-			
+
 		case TIOCSETAF:
 		{
 			if (logEverything) {
 				ioctl_log("termios: conv 'TIOCSETAF'");
 			}
-			
+
 			bsd_to_linux_termios((struct termios*)param, &lios);
-			
+
 			error = platform_ioctl(fd, LINUX_TCSETSF, &lios);
 			if (error) {
 				break;
 			}
-			
+
 			break;
 		}
 
 #define directCase(x) case x: if (logEverything) \
 ioctl_log("termios: '%s' no conv", #x);\
 error = platform_ioctl(fd, LINUX_## x, param); break;
-			
+
 			directCase(TIOCEXCL);
 			directCase(TIOCGPGRP);
 			directCase(TIOCNXCL);
@@ -526,7 +529,7 @@ error = platform_ioctl(fd, LINUX_## x, param); break;
 			directCase(TIOCSBRK);
 			directCase(TIOCCBRK);
 
-			
+
 		case TCIOFLUSH:
 		{
 			if (logEverything) {
@@ -534,7 +537,7 @@ error = platform_ioctl(fd, LINUX_## x, param); break;
 			}
 			break;
 		}
-			
+
 		default:
 		{
 			if (logEverything) {
@@ -543,10 +546,10 @@ error = platform_ioctl(fd, LINUX_## x, param); break;
 			break;
 		}
 	}
-	
+
 	if (logEverything)
 		OSLog("termios: error = %d", error);
-	
+
 	return error;
 }
 
@@ -560,7 +563,7 @@ int ioctl$darwin(int fd, unsigned long request, void* param) {
 			  param,
 			  (void*)cmd);
 	}
-	
+
 	if (cmd >= BSD_TERMIO_MIN && cmd <= BSD_TERMIO_MAX) {
 		return ioctl$BRIDGE$termios(fd, request, param);
 	}
@@ -568,7 +571,7 @@ int ioctl$darwin(int fd, unsigned long request, void* param) {
 		if (logEverything) {
 			ioctl_log("ioct$xxx(%d, %p, %p): falling through", fd, request, param);
 		}
-		
+
 		return platform_ioctl(fd, request, param);
 	}
 }

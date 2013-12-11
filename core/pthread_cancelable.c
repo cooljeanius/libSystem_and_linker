@@ -2,14 +2,14 @@
  * Copyright (c) 2000-2008 Apple Inc. All rights reserved.
  *
  * @APPLE_LICENSE_HEADER_START@
- * 
+ *
  * This file contains Original Code and/or Modifications of Original Code
  * as defined in and that are subject to the Apple Public Source License
  * Version 2.0 (the 'License'). You may not use this file except in
  * compliance with the License. Please obtain a copy of the License at
  * http://www.opensource.apple.com/apsl/ and read it before using this
  * file.
- * 
+ *
  * The Original Code and all software distributed under the License are
  * distributed on an 'AS IS' basis, WITHOUT WARRANTY OF ANY KIND, EITHER
  * EXPRESS OR IMPLIED, AND APPLE HEREBY DISCLAIMS ALL SUCH WARRANTIES,
@@ -17,29 +17,29 @@
  * FITNESS FOR A PARTICULAR PURPOSE, QUIET ENJOYMENT OR NON-INFRINGEMENT.
  * Please see the License for the specific language governing rights and
  * limitations under the License.
- * 
+ *
  * @APPLE_LICENSE_HEADER_END@
  */
 /*
- * Copyright 1996 1995 by Open Software Foundation, Inc. 1997 1996 1995 1994 1993 1992 1991  
- *              All Rights Reserved 
- *  
- * Permission to use, copy, modify, and distribute this software and 
- * its documentation for any purpose and without fee is hereby granted, 
- * provided that the above copyright notice appears in all copies and 
- * that both the copyright notice and this permission notice appear in 
- * supporting documentation. 
- *  
- * OSF DISCLAIMS ALL WARRANTIES WITH REGARD TO THIS SOFTWARE 
- * INCLUDING ALL IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS 
- * FOR A PARTICULAR PURPOSE. 
- *  
- * IN NO EVENT SHALL OSF BE LIABLE FOR ANY SPECIAL, INDIRECT, OR 
- * CONSEQUENTIAL DAMAGES OR ANY DAMAGES WHATSOEVER RESULTING FROM 
- * LOSS OF USE, DATA OR PROFITS, WHETHER IN ACTION OF CONTRACT, 
- * NEGLIGENCE, OR OTHER TORTIOUS ACTION, ARISING OUT OF OR IN CONNECTION 
- * WITH THE USE OR PERFORMANCE OF THIS SOFTWARE. 
- * 
+ * Copyright 1996 1995 by Open Software Foundation, Inc. 1997 1996 1995 1994 1993 1992 1991
+ *              All Rights Reserved
+ *
+ * Permission to use, copy, modify, and distribute this software and
+ * its documentation for any purpose and without fee is hereby granted,
+ * provided that the above copyright notice appears in all copies and
+ * that both the copyright notice and this permission notice appear in
+ * supporting documentation.
+ *
+ * OSF DISCLAIMS ALL WARRANTIES WITH REGARD TO THIS SOFTWARE
+ * INCLUDING ALL IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS
+ * FOR A PARTICULAR PURPOSE.
+ *
+ * IN NO EVENT SHALL OSF BE LIABLE FOR ANY SPECIAL, INDIRECT, OR
+ * CONSEQUENTIAL DAMAGES OR ANY DAMAGES WHATSOEVER RESULTING FROM
+ * LOSS OF USE, DATA OR PROFITS, WHETHER IN ACTION OF CONTRACT,
+ * NEGLIGENCE, OR OTHER TORTIOUS ACTION, ARISING OUT OF OR IN CONNECTION
+ * WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
+ *
  */
 /*
  * MkLinux
@@ -60,7 +60,9 @@
 #include <sys/resource.h>
 #include <sys/sysctl.h>
 #include <sys/queue.h>
+#ifdef HAVE_MACHINE_VMPARAM_H
 #include <machine/vmparam.h>
+#endif
 #include <mach/vm_statistics.h>
 
 extern int __unix_conforming;
@@ -68,7 +70,7 @@ extern void __posix_join_cleanup(void *arg);
 extern pthread_lock_t _pthread_list_lock;
 extern void _pthread_testcancel(pthread_t thread, int isconforming);
 extern int _pthread_reap_thread(pthread_t th, mach_port_t kernel_thread, void **value_ptr, int conforming);
-extern int _pthread_cond_wait(pthread_cond_t *cond, 
+extern int _pthread_cond_wait(pthread_cond_t *cond,
 			pthread_mutex_t *mutex,
 			const struct timespec *abstime,
 			int isRelative,
@@ -79,8 +81,8 @@ extern int __sigwait(const sigset_t *set, int *sig);
 /*
  * Wait for a thread to terminate and obtain its exit value.
  */
-int       
-pthread_join(pthread_t thread, 
+int
+pthread_join(pthread_t thread,
 	     void **value_ptr)
 {
 	int res = 0;
@@ -125,7 +127,7 @@ pthread_join(pthread_t thread,
 				if (!already_exited)
 				{
 #if __DARWIN_UNIX03
-					/* Wait for it to signal... */ 
+					/* Wait for it to signal... */
 					pthread_cleanup_push(__posix_join_cleanup, (void *)thread);
 					do {
 						res = __semwait_signal(death, 0, 0, 0, (int64_t)0, (int32_t)0);
@@ -133,12 +135,12 @@ pthread_join(pthread_t thread,
 					pthread_cleanup_pop(0);
 
 #else /* __DARWIN_UNIX03 */
-					/* Wait for it to signal... */ 
+					/* Wait for it to signal... */
 					do {
 						PTHREAD_MACH_CALL(semaphore_wait(death), kern_res);
 					} while (kern_res != KERN_SUCCESS);
 #endif /* __DARWIN_UNIX03 */
-				} 
+				}
 
 				LOCK(_pthread_list_lock);
 				TAILQ_REMOVE(&__pthread_head, thread, plist);
@@ -153,7 +155,7 @@ pthread_join(pthread_t thread,
 				{
 					sched_yield();
 				}
-			
+
 			} else {
 				UNLOCK(thread->lock);
 				res = EDEADLK;
@@ -185,7 +187,7 @@ pthread_join(pthread_t thread,
 						LIBC_ABORT("thread %p: death == SEMAPHORE_NULL", thread);
 					thread->joiner_notify = death;
 					death = SEMAPHORE_NULL;
-				} 
+				}
 				joinsem = thread->joiner_notify;
 				thread->joiner = self;
 				UNLOCK(thread->lock);
@@ -195,14 +197,14 @@ pthread_join(pthread_t thread,
 					death = SEMAPHORE_NULL;
 				}
 #if __DARWIN_UNIX03
-				/* Wait for it to signal... */ 
+				/* Wait for it to signal... */
 				pthread_cleanup_push(__posix_join_cleanup, (void *)thread);
 				do {
 					res = __semwait_signal(joinsem, 0, 0, 0, (int64_t)0, (int32_t)0);
 				} while ((res < 0) && (errno == EINTR));
 				pthread_cleanup_pop(0);
 #else /* __DARWIN_UNIX03 */
-				/* Wait for it to signal... */ 
+				/* Wait for it to signal... */
 				do {
 					PTHREAD_MACH_CALL(semaphore_wait(joinsem), kern_res);
 				} while (kern_res != KERN_SUCCESS);
@@ -226,8 +228,8 @@ pthread_join(pthread_t thread,
 	return ESRCH;
 }
 
-int       
-pthread_cond_wait(pthread_cond_t *cond, 
+int
+pthread_cond_wait(pthread_cond_t *cond,
 		  pthread_mutex_t *mutex)
 {
 	int conforming;
@@ -247,8 +249,8 @@ pthread_cond_wait(pthread_cond_t *cond,
 	return (_pthread_cond_wait(cond, mutex, (struct timespec *)NULL, 0, conforming));
 }
 
-int       
-pthread_cond_timedwait(pthread_cond_t *cond, 
+int
+pthread_cond_timedwait(pthread_cond_t *cond,
 		       pthread_mutex_t *mutex,
 		       const struct timespec *abstime)
 {
@@ -284,8 +286,8 @@ sigwait(const sigset_t * set, int * sig)
 
 	if (__sigwait(set, sig) == -1) {
 		err = errno;
-		
-		/* 
+
+		/*
 		 * EINTR that isn't a result of pthread_cancel()
 		 * is translated to 0.
 		 */
@@ -296,7 +298,7 @@ sigwait(const sigset_t * set, int * sig)
 	return(err);
 #else /* __DARWIN_UNIX03 */
 	if (__sigwait(set, sig) == -1) {
-		/* 
+		/*
 		 * EINTR that isn't a result of pthread_cancel()
 		 * is translated to 0.
 		 */

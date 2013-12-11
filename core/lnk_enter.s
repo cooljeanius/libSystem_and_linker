@@ -8,7 +8,6 @@
  */
 
 
-
 #ifndef __arm__
 	#error Only ARM architecture is supported.
 #endif
@@ -16,11 +15,11 @@
 .data
 .align 2
 
-/*  __DATA is not pie so we can use this to find out by 
- *  how much the kernel slid the linker by looking 
+/*  __DATA is not pie so we can use this to find out by
+ *  how much the kernel slid the linker by looking
  *  at the PC
  */
-__start_static_picbase: 
+__start_static_picbase:
 	.long	L__start_picbase
 
 .text
@@ -84,12 +83,12 @@ L__start_picbase:
 	ldr	r2, [r8, #8]	/* r2: argv */
 
 	/* Fifth arg on SP (lnk_header) */
-	ldr r4, [r8, #12] 
+	ldr r4, [r8, #12]
 	str	r4, [sp, #0]
 
 	/*
 	 * Kick off the linker bootstrapping code.
-	 * 
+	 *
 	 * With this compiler, the mangled name for 'lnk::bootstrap' is:
 	 * __ZN3lnk9bootstrap5startEPK11mach_headeriPPKclS3_
 	 */

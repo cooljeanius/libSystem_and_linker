@@ -8,34 +8,35 @@
 #include "lnk_mm.h"
 #include <sys/mman.h>
 #include <string.h>
+#include <stdint.h>
 
 namespace lnk {
 	namespace mm {
 		/* reserve a memory range */
 		void* reserve(size_t sz) {
-			void* rs = 
+			void* rs =
 			mmap(NULL,
 				 sz,
 				 PROT_READ | PROT_WRITE,
 				 MAP_ANON | MAP_PRIVATE,
 				 0,
 				 0);
-			
+
 			return rs;
 		}
-		
+
 		void* wire_anon(void* addr, size_t vmsize) {
-			void* rs = 
+			void* rs =
 			mmap(addr,
 				 vmsize,
 				 PROT_READ | PROT_WRITE,
 				 MAP_ANON | MAP_PRIVATE | MAP_FIXED,
 				 0,
 				 0);
-			
+
 			return rs;
 		}
-		
+
 		void* wire(int fd, void* addr, size_t vmsize, uint32_t fileoff) {
 			return
 			mmap(addr,

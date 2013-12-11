@@ -26,9 +26,16 @@
 	#define ARM_RELOC_PB_LA_PTR 4
 #endif
 
+#ifdef HAVE_STDINT_H
+#include <stdint.h>
+#endif
+#ifdef HAVE_SYS_TYPES_H
+#include <sys/types.h>
+#endif
+
 /* Compile-time sanity (this code only works on arm32) */
 #if !defined(__arm__)
-	#error This will not work on non-ARM platforms, don't even try it.
+	#error This will not work on non-ARM platforms, do not even try it.
 #endif
 
 /* is that a dead dove? */
@@ -67,7 +74,7 @@ uintptr_t MachObject::getFirstWritableSegmentAddress()
 {
 	/* in split segment libraries r_address is offset from first writable segment */
 	for(unsigned int i=0; i < fSegmentsCount; ++i) {
-		if ( segWriteable(i) ) 
+		if ( segWriteable(i) )
 			return segActualLoadAddr(i);
 	}
 	lnk::halt("getFirstWritableSegmentAddress: no writable segment");
@@ -79,25 +86,25 @@ void MachObject::classicRebase()
 	 * ARM only.
 	 * Don't you dare running this on split seg images.
 	 */
-	
+
 	register const uintptr_t slide = this->fSlide;
 	const uintptr_t relocBase = this->getClassicRelocBase();
-	
+
 	if (!fDynamicInfo) {
 		lnk::halt("no dsymtab section");
 	}
-	
-	const relocation_info* const relocsStart = 
+
+	const relocation_info* const relocsStart =
 	(struct relocation_info*)(&fLinkEditBase[fDynamicInfo->locreloff]);
-	
-	const relocation_info* const relocsEnd = 
+
+	const relocation_info* const relocsEnd =
 	&relocsStart[fDynamicInfo->nlocrel];
-	
+
 	//lnk::halt("");
 	int i = 0;
 	for (const relocation_info* reloc=relocsStart; reloc < relocsEnd; ++reloc) {
 		i++;
-		
+
 		if ( (reloc->r_address & R_SCATTERED) == 0 ) {
 
 			if ( reloc->r_symbolnum == R_ABS ) {
@@ -107,7 +114,7 @@ void MachObject::classicRebase()
 			else if (reloc->r_length == RELOC_SIZE) {
 				if (reloc->r_type == GENERIC_RELOC_VANILLA) {
 					uintptr_t* pp = (uintptr_t*)(reloc->r_address + relocBase);
-					
+
 					*(pp) = (*pp + slide);
 				}
 				else {
@@ -152,18 +159,18 @@ MachObject* MachObject::instantiateFromFile(const char* path, const char* origPa
 	uint32_t segment_count = 0;
 	void* actual_map_address = NULL;
 	uint32_t file_size = 0;
-	
+
 	if (gVerboseLog) {
 		lnk::log("institating a MachObject from file\n"
 				 "            path  : %s\n"
 				 "            fd    : %p"
 				 , path, fd);
 	}
-	
+
 	/* Read mach-o header */
 	memset(&header, 0, sizeof(header));
 	read_at(fd, &header, sizeof(header), 0);
-	
+
 	/* Check sanity */
 	if (header.magic != MH_MAGIC) {
 		lnk::halt("instantiateFromFile(%s): invalid magic (%p instead of %p)",
@@ -171,22 +178,22 @@ MachObject* MachObject::instantiateFromFile(const char* path, const char* origPa
 				  header.magic,
 				  MH_MAGIC);
 	}
-	
+
 	/* Read load commands into a buffer */
 	cmd_base = malloc(header.sizeofcmds);
 	read_at(fd, cmd_base, header.sizeofcmds, sizeof(macho_header));
-	
+
 	/* Set stuff */
 	ncmds = header.ncmds;
-	
+
 	/* Build array of segment load commands  */
 	for (int i = 0; i < ncmds; i++)
 	{
-		struct load_command	*lcp = 
+		struct load_command	*lcp =
 		(struct load_command *)((size_t)cmd_base + offset);
-		
+
 		offset += lcp->cmdsize;
-		
+
 		if (lcp->cmd == LC_SEGMENT)
 		{
 			segments[segment_count] = (macho_segment_command*)lcp;
@@ -194,12 +201,12 @@ MachObject* MachObject::instantiateFromFile(const char* path, const char* origPa
 			segment_count++;
 		}
 	}
-	
+
 	/* Check segment sanity */
 	if (segment_count < 1) {
 		lnk::halt("instantiateFromFile(%s): no segments", path);
 	}
-	
+
 	/* Is this a fixed-load dylib? */
 	if (segments[0]->vmaddr != 0) {
 		/* Fixed, so not reserving */
@@ -210,7 +217,7 @@ MachObject* MachObject::instantiateFromFile(const char* path, const char* origPa
 		/* Reserve a continous range */
 		loader_bias = (uint32_t)lnk::mm::reserve(map_size);
 	}
-	
+
 	/* Map the segments */
 	for (int i = 0; i < segment_count; i++)
 	{
@@ -218,50 +225,50 @@ MachObject* MachObject::instantiateFromFile(const char* path, const char* origPa
 		uint32_t delta = 0;
 		vm_size_t mm_filesize = round_page(seg->filesize);
 		vm_size_t mm_vmsize = round_page(seg->vmsize);
-		
-		actual_map_address = 
+
+		actual_map_address =
 		lnk::mm::wire(fd,
 					  pageAlignPtr((void*)addUintPtr2(seg->vmaddr, loader_bias)),
 					  mm_filesize,
 					  seg->fileoff);
-		
+
 		if (gVerboseLog) {
 			lnk::log("(%s:%s): wired at %p (sz: %p)", path, seg->segname, actual_map_address, mm_filesize);
 		}
-		
+
 		delta = mm_vmsize - mm_filesize;
-		
+
 		if (delta && !loader_bias)
 		{
 			/*
 			 * We need to zero-fill the memory as this space
 			 * isn't backed up be reserved memory.
 			 */
-			
-			void* anon_load = 
+
+			void* anon_load =
 			(void*)(addUintPtr3(seg->vmaddr, loader_bias, mm_filesize));
-			
+
 			anon_load = pageAlignPtr(anon_load);
-			
+
 			/* map anonymous memory to fill the rest */
-			actual_map_address = 
+			actual_map_address =
 			lnk::mm::wire_anon(anon_load,
 							   delta);
-			
+
 			if (gVerboseLog) {
 				lnk::log("(%s:%s): wired anon at %p (sz: %p)", path, seg->segname, actual_map_address, delta);
 			}
 		}
 	}
-	
+
 	/* Add __TEXT to the linker table */
 	linker_image_table_add((uintptr_t)addUintPtr2(segments[0]->vmaddr, loader_bias),
 						   (size_t)segments[0]->vmsize,
 						   path);
-	
+
 	/* Instiate a new object */
 	MachObject* obj = new MachObject();
-	
+
 	/* Set the object properties */
 	obj->fSlide = (uintptr_t)loader_bias;
 	obj->fHeader = (macho_header*)addUintPtr2(segments[0]->vmaddr, loader_bias);
@@ -269,7 +276,7 @@ MachObject* MachObject::instantiateFromFile(const char* path, const char* origPa
 	obj->fFilePath = path;
 	obj->fOrigFilePath = origPath;
 	obj->fIsSplitSeg = (loader_bias == 0);
-	
+
 	return obj;
 }
 
@@ -282,12 +289,12 @@ uintptr_t MachObject::getSlide() {
 	return fSlide;
 }
 
-const struct mach_header* MachObject::getMachHeader() 
+const struct mach_header* MachObject::getMachHeader()
 {
 	return fHeader;
 }
 
-MachObject* MachObject::instantiateFromMemory(const char* moduleName, const macho_header* mh, intptr_t slide) 
+MachObject* MachObject::instantiateFromMemory(const char* moduleName, const macho_header* mh, intptr_t slide)
 {
 	if (gVerboseLog) {
 		lnk::log("institating a MachObject from memory\n"
@@ -296,22 +303,22 @@ MachObject* MachObject::instantiateFromMemory(const char* moduleName, const mach
 				 "            slide : %d"
 				 , moduleName, mh, slide);
 	}
-	
+
 	MachObject* obj = new MachObject();
 	obj->fHeader = mh;
 	obj->fModuleName = moduleName;
 	obj->fSlide = slide;
-	
+
 	return obj;
 }
 
 void MachObject::rebaseAt(uintptr_t addr, uintptr_t slide, uint8_t type)
-{	
+{
 	uintptr_t* locationToFix = (uintptr_t*)(addr);
-	
+
 	//lnk::ldbg::printNumber("rebase      @ ", *locationToFix);
 	//lnk::ldbg::printNumber("rebase addr @ ", addr);
-	
+
 	switch (type) {
 		case REBASE_TYPE_POINTER:
 			*locationToFix += slide;
@@ -324,22 +331,22 @@ void MachObject::rebaseAt(uintptr_t addr, uintptr_t slide, uint8_t type)
 	}
 }
 
-macho_segment_command* MachObject::segLoadCmd(int index) 
+macho_segment_command* MachObject::segLoadCmd(int index)
 {
 	return fSegmentLoadCommands[index];
 }
 
-uintptr_t MachObject::segActualLoadAddr(int index) 
+uintptr_t MachObject::segActualLoadAddr(int index)
 {
 	return segLoadCmd(index)->vmaddr + fSlide;
 }
 
-uintptr_t MachObject::segActualEndAddr(int index) 
+uintptr_t MachObject::segActualEndAddr(int index)
 {
 	return segActualLoadAddr(index) + segLoadCmd(index)->vmsize;
 }
 
-uintptr_t MachObject::segFileOffset(int index) 
+uintptr_t MachObject::segFileOffset(int index)
 {
 	return segLoadCmd(index)->fileoff;
 }
@@ -351,24 +358,24 @@ uintptr_t MachObject::exportedSymbolAddressCompressed(Symbol *sym)
 	const uint8_t* end = addUintPtr3(fLinkEditBase, fDyldInfo->export_off, fDyldInfo->export_size);
 	bool runResolver = true;
 	uintptr_t result = 0;
-	
+
 	if ((exportNode < start) || (exportNode > end))
 		lnk::halt("symbol not in a trie");
-	
+
 	uint32_t flags = read_uleb128(exportNode, end);
-	
+
 	if ((flags & EXPORT_SYMBOL_FLAGS_KIND_MASK) == EXPORT_SYMBOL_FLAGS_KIND_REGULAR) {
 		if ( runResolver && (flags & EXPORT_SYMBOL_FLAGS_STUB_AND_RESOLVER) ) {
 			lnk::halt("XXX: resolvers not implemented, fix macho loader on line %d", __LINE__);
 			return result;
 		}
-		
+
 		return read_uleb128(exportNode, end) + (uintptr_t)fHeader;
 	}
 	else if ((flags & EXPORT_SYMBOL_FLAGS_KIND_MASK) == EXPORT_SYMBOL_FLAGS_KIND_THREAD_LOCAL) {
 		if (flags & EXPORT_SYMBOL_FLAGS_STUB_AND_RESOLVER)
 			lnk::halt("unsupported local exported symbol kind. flags=%d at node=%p", flags, sym);
-		
+
 		return read_uleb128(exportNode, end) + (uintptr_t)fHeader;
 	}
 	else {
@@ -380,10 +387,10 @@ uintptr_t MachObject::exportedSymbolAddressClassic(Symbol *sym)
 {
 	const struct nlist* ss = (struct nlist*)(sym->addr);
 	uintptr_t result = ss->n_value + fSlide;
-	
+
 	if (ss->n_desc & N_ARM_THUMB_DEF)
 		result |= 1;
-	
+
 	return result;
 }
 
@@ -401,23 +408,23 @@ bool MachObject::findExportedSymbolCompressed(const char* symbol, Symbol* sym)
 {
 	/*
 	 This is a slightly tidier version of 'findExportedSymbol'
-	 from dyld. Still no fucking idea what the semantics of it 
+	 from dyld. Still no fucking idea what the semantics of it
 	 are since I suck at CS (lol, wtf is a trie?!).
 	 */
-	
+
 	/* export table sanity */
 	if (fDyldInfo->export_size == 0)
 		return false;
-	
+
 	const uint8_t* start = addUintPtr2(fLinkEditBase, fDyldInfo->export_off);
 	const uint8_t* end = addUintPtr3(fLinkEditBase, fDyldInfo->export_off, fDyldInfo->export_size);
-	
-	const uint8_t* foundNodeStart = trie_walk(start, end, symbol); 
-	
+
+	const uint8_t* foundNodeStart = trie_walk(start, end, symbol);
+
 	if (foundNodeStart != NULL) {
 		const uint8_t* p = foundNodeStart;
 		const uint32_t flags = read_uleb128(p, end);
-		
+
 		if (flags & EXPORT_SYMBOL_FLAGS_REEXPORT) {
 			lnk::halt("no fucking idea, honestly");
 			return false;
@@ -425,7 +432,7 @@ bool MachObject::findExportedSymbolCompressed(const char* symbol, Symbol* sym)
 		else {
 			sym->addr = (void*)foundNodeStart;
 			sym->inImage = (void*)this;
-			
+
 			return true;
 		}
 	}
@@ -437,7 +444,7 @@ bool MachObject::findExportedSymbolCompressed(const char* symbol, Symbol* sym)
 bool MachObject::findExportedSymbolClassic(const char* name, Symbol* sym_)
 {
 	const struct nlist* sym = NULL;
-	
+
 	if (fDynamicInfo->tocoff == 0)
 	{
 		sym = binary_search(name,
@@ -450,62 +457,62 @@ bool MachObject::findExportedSymbolClassic(const char* name, Symbol* sym_)
 		sym = binary_search_toc(name,
 								fStrings,
 								fSymtab,
-								(dylib_table_of_contents*)&fLinkEditBase[fDynamicInfo->tocoff], 
+								(dylib_table_of_contents*)&fLinkEditBase[fDynamicInfo->tocoff],
 								fDynamicInfo->ntoc,
 								fDynamicInfo->nextdefsym);
 	}
-	
+
 	//printf("classic_lookup(%s): %p \n", name, sym);
-	
+
 	if (sym != NULL) {
 		sym_->inImage = (void*)this;
 		sym_->addr = (void*)sym;
-		
+
 		return true;
 	}
-	
+
 	return false;
 }
 
 bool MachObject::findExportedSymbol(const char* symbol, Symbol* sym)
 {
 	bool ret = false;
-	
+
 	if (fIsClassic) {
 		ret = findExportedSymbolClassic(symbol, sym);
 	}
 	else {
 		ret = findExportedSymbolCompressed(symbol, sym);
 	}
-	
+
 	if (!ret) {
 		if (fReExportCount) {
 			/* The symbol could be in a re-exported lib */
-			
+
 			for (int i = 0; i < fReExportCount; i++)
 			{
 				Symbol rexp;
 				bool ret;
-				
-				ret = 
+
+				ret =
 				fReExports[i]->findExportedSymbol(symbol, &rexp);
-				
+
 				if (ret) {
 					sym->addr = rexp.addr;
 					sym->inImage = rexp.inImage;
-					
+
 					return true;
 				}
 			}
 		}
-		
+
 		/* not found anywhere! */
 		return false;
 	}
 	else {
 		/* symbol found! */
 		return true;
-	}	
+	}
 }
 
 void MachObject::bind(uintptr_t address,
@@ -518,7 +525,7 @@ void MachObject::bind(uintptr_t address,
 {
 	Image* targetImage = NULL;
 	int reqOrdinal = ordinal-1;
-	
+
 	/*
 	 * Perform a two-level resoultion.
 	 * Ordinals start at 1, everything below is special.
@@ -530,15 +537,15 @@ void MachObject::bind(uintptr_t address,
 		/* Normal library ordinal */
 		targetImage = fDependencies[reqOrdinal];
 	}
-	
-	uintptr_t value = 
+
+	uintptr_t value =
 	lnk::resolve(name,
 				 flags,
 				 ordinal,
 				 &targetImage,
 				 this);
 
-	
+
 	/* let's rock */
 	if (0) {
 		if ( addend != 0 ) {
@@ -554,7 +561,7 @@ void MachObject::bind(uintptr_t address,
 					  lnk::safe_symbol_name((char*)name), (uintptr_t)address, value);
 		}
 	}
-	
+
 	/* update */
 	uintptr_t* locationToFix = (uintptr_t*)address;
 	uint32_t* loc32;
@@ -587,34 +594,34 @@ void MachObject::processSections()
 {
 	for (int i =0; i < fSegmentsCount; i++) {
 		macho_segment_command* seg = segLoadCmd(i);
-		
+
 		/* For enumerating the sections */
 		const macho_section* const sectionsStart =
 		(macho_section*)((char*)seg + sizeof(macho_segment_command));
-		
-		const macho_section* const sectionsEnd = 
+
+		const macho_section* const sectionsEnd =
 		&sectionsStart[seg->nsects];
-		
+
 		for (const macho_section* sect=sectionsStart; sect < sectionsEnd; ++sect) {
 			uint8_t type = sect->flags & SECTION_TYPE;
 			type = type; /* shut up gcc, I don't care */
-			
+
 			if (strcmp(sect->sectname, "__program_vars") == 0) {
 				struct ProgramVars* pv = (struct ProgramVars*)(sect->addr + fSlide);
-				
+
 				lnk::log("'%s': program vars: {mh=%p, v=%p, c=%p, env=%p}",
 						 getShortName(),
 						 pv->mh,
 						 pv->NXArgvPtr,
 						 pv->NXArgcPtr,
 						 pv->environPtr);
-				
-				
+
+
 				/*
 				 * I like the brackets around '*pv->environPtr'.
 				 * Do not remove them, or it will make me sad.
 				 */
-				(*pv->environPtr) = (const char**)gEnvironPtr; 
+				(*pv->environPtr) = (const char**)gEnvironPtr;
 			}
 			else if (strcmp(sect->sectname, "__bridge") == 0) {
 				BridgeEntry* br = (BridgeEntry*)(sect->addr + fSlide);
@@ -638,69 +645,69 @@ void MachObject::doInitialize()
 	if (fHasInitialized) {
 		return;
 	}
-	
+
 	if (fRoutines != NULL) {
 		Initializer func = (Initializer)(fRoutines->init_address + fSlide);
 		lnk::log("(%s): LC_ROUTINES initializer @ %p", getShortName(), func);
 		lnk::callInitializer(func, this);
 	}
-	
+
 	for (int i =0; i < fSegmentsCount; i++) {
 		macho_segment_command* seg = fSegmentLoadCommands[i];
-		
+
 		/* For enumerating the sections */
 		const macho_section* const sectionsStart =
 		(macho_section*)((char*)seg + sizeof(macho_segment_command));
-		
-		const macho_section* const sectionsEnd = 
+
+		const macho_section* const sectionsEnd =
 		&sectionsStart[seg->nsects];
-		
+
 		for (const macho_section* sect=sectionsStart; sect < sectionsEnd; ++sect) {
 			const uint8_t type = sect->flags & SECTION_TYPE;
-			
+
 			if (gVerboseLog) {
 				lnk::log("(%s): %s", getShortName(), sect->sectname);
 			}
-			
+
 			if (type == S_MOD_INIT_FUNC_POINTERS) {
 				/*
 					This is how dyld does it.
 				 */
 				Initializer* inits = (Initializer*)(sect->addr + fSlide);
 				const uint32_t count = sect->size / sizeof(uintptr_t);
-				
+
 				for (uint32_t i=0; i < count; ++i) {
 					Initializer func = inits[i];
-					
+
 					lnk::callInitializer(func, this);
 				}
 			}
 		}
 	}
-	
+
 	fHasInitialized = true;
 }
 
 void MachObject::throwBadBindingAddress(uintptr_t address,
 										uintptr_t segmentEndAddress,
-										int segmentIndex, 
+										int segmentIndex,
 										const uint8_t* startOpcodes,
 										const uint8_t* endOpcodes,
 										const uint8_t* pos)
 {
 	lnk::halt("malformed binding opcodes (%ld/%ld): address 0x%08lX is beyond end of segment %d (0x%08lX -> 0x%08lX)",
-				 (intptr_t)(pos-startOpcodes), (intptr_t)(endOpcodes-startOpcodes), address, segmentIndex, 
-				 segActualLoadAddr(segmentIndex), segmentEndAddress); 
+				 (intptr_t)(pos-startOpcodes), (intptr_t)(endOpcodes-startOpcodes), address, segmentIndex,
+				 segActualLoadAddr(segmentIndex), segmentEndAddress);
 }
 
-void MachObject::readLazyBind(const uint8_t* start, const uint8_t* end) 
+void MachObject::readLazyBind(const uint8_t* start, const uint8_t* end)
 {
 	const uint8_t* pos = start;
-	
+
 	if (gVerboseLog) {
 		lnk::log("binding lazy symbols\n            start %p, end %p", start, end);
 	}
-	
+
 	/* Data retrieved from the opcodes */
 	int libraryOrdinal = 0;
 	int segmentIndex = 0;
@@ -708,30 +715,30 @@ void MachObject::readLazyBind(const uint8_t* start, const uint8_t* end)
 	uint8_t symbolFlags = 0;
 	intptr_t addend = 0;
 	uint8_t type = BIND_TYPE_POINTER; /* ptr */
-	
+
 	/* XXX: get from segdata */
 	uintptr_t segmentEndAddress = 0;
 	uintptr_t address = 0;
-	
+
 	/* Parse opcodes */
 	while (pos < end) {
 		uint8_t opcode = *(pos) & BIND_OPCODE_MASK;
 		uint8_t immediate = *(pos) & BIND_IMMEDIATE_MASK;
-		
+
 		pos++;
-		
+
 		switch (opcode) {
 			case BIND_OPCODE_DONE:
-			{	
+			{
 				break;
 			}
 			case BIND_OPCODE_SET_DYLIB_ORDINAL_IMM:
-			{	
+			{
 				libraryOrdinal = immediate;
 				break;
 			}
 			case BIND_OPCODE_SET_DYLIB_ORDINAL_ULEB:
-			{	
+			{
 				libraryOrdinal = (int)read_uleb128(pos, end);
 				break;
 			}
@@ -764,7 +771,7 @@ void MachObject::readLazyBind(const uint8_t* start, const uint8_t* end)
 			case BIND_OPCODE_SET_SEGMENT_AND_OFFSET_ULEB:
 			{
 				segmentIndex = immediate;
-				
+
 				address = segActualLoadAddr(segmentIndex) + read_uleb128(pos, end);
 				segmentEndAddress = segActualEndAddr(segmentIndex);
 				break;
@@ -776,14 +783,14 @@ void MachObject::readLazyBind(const uint8_t* start, const uint8_t* end)
 				while (*pos != '\0')
 					++pos;
 				++pos;
-				
+
 				break;
 			}
 			case BIND_OPCODE_DO_BIND:
 			{
-				if ( address >= segmentEndAddress ) 
+				if ( address >= segmentEndAddress )
 					throwBadBindingAddress(address, segmentEndAddress, segmentIndex, start, end, pos);
-				
+
 				this->bind(address,
 						   type,
 						   symbolName,
@@ -791,7 +798,7 @@ void MachObject::readLazyBind(const uint8_t* start, const uint8_t* end)
 						   addend,
 						   libraryOrdinal,
 						   "lazy");
-				
+
 				address += sizeof(intptr_t);
 				break;
 			}
@@ -810,7 +817,7 @@ void MachObject::readLazyBind(const uint8_t* start, const uint8_t* end)
 void MachObject::readRebase(const uint8_t* start, const uint8_t* end)
 {
 	/* aaaa!!!! */;
-	
+
 	uint8_t type = 0;
 	int segmentIndex = 0;
 	uintptr_t address = segActualLoadAddr(0);
@@ -818,14 +825,14 @@ void MachObject::readRebase(const uint8_t* start, const uint8_t* end)
 	uint32_t count;
 	uint32_t skip;
 	const uint8_t* p = start;
-	
+
 	bool done = false;
 	while ( !done && (p < end) ) {
 		uint8_t immediate = *p & REBASE_IMMEDIATE_MASK;
 		uint8_t opcode = *p & REBASE_OPCODE_MASK;
-		
+
 		++p;
-		
+
 		switch (opcode) {
 			case REBASE_OPCODE_DONE:
 				done = true;
@@ -837,7 +844,7 @@ void MachObject::readRebase(const uint8_t* start, const uint8_t* end)
 				segmentIndex = immediate;
 				if (segmentIndex > fSegmentsCount)
 					lnk::halt("baaaad seg count for rebase!");
-				
+
 				address = segActualLoadAddr(segmentIndex) + read_uleb128(p, end);
 				segmentEndAddress = segActualEndAddr(segmentIndex);
 				break;
@@ -849,7 +856,7 @@ void MachObject::readRebase(const uint8_t* start, const uint8_t* end)
 				break;
 			case REBASE_OPCODE_DO_REBASE_IMM_TIMES:
 				for (int i=0; i < immediate; ++i) {
-					if ( address >= segmentEndAddress ) 
+					if ( address >= segmentEndAddress )
 						throwBadBindingAddress(address, segmentEndAddress, segmentIndex, start, end, p);
 					this->rebaseAt(address, fSlide, type);
 					address += sizeof(uintptr_t);
@@ -858,14 +865,14 @@ void MachObject::readRebase(const uint8_t* start, const uint8_t* end)
 			case REBASE_OPCODE_DO_REBASE_ULEB_TIMES:
 				count = read_uleb128(p, end);
 				for (uint32_t i=0; i < count; ++i) {
-					if ( address >= segmentEndAddress ) 
+					if ( address >= segmentEndAddress )
 						throwBadBindingAddress(address, segmentEndAddress, segmentIndex, start, end, p);
 					this->rebaseAt(address, fSlide, type);
 					address += sizeof(uintptr_t);
 				}
 				break;
 			case REBASE_OPCODE_DO_REBASE_ADD_ADDR_ULEB:
-				if ( address >= segmentEndAddress ) 
+				if ( address >= segmentEndAddress )
 					throwBadBindingAddress(address, segmentEndAddress, segmentIndex, start, end, p);
 				this->rebaseAt(address, fSlide, type);
 				address += read_uleb128(p, end) + sizeof(uintptr_t);
@@ -874,7 +881,7 @@ void MachObject::readRebase(const uint8_t* start, const uint8_t* end)
 				count = read_uleb128(p, end);
 				skip = read_uleb128(p, end);
 				for (uint32_t i=0; i < count; ++i) {
-					if ( address >= segmentEndAddress ) 
+					if ( address >= segmentEndAddress )
 						throwBadBindingAddress(address, segmentEndAddress, segmentIndex, start, end, p);
 					rebaseAt(address, fSlide, type);
 					address += skip + sizeof(uintptr_t);
@@ -888,14 +895,14 @@ void MachObject::readRebase(const uint8_t* start, const uint8_t* end)
 
 }
 
-void MachObject::readWeakBind(const uint8_t* start, const uint8_t* end) 
+void MachObject::readWeakBind(const uint8_t* start, const uint8_t* end)
 {
 	const uint8_t* pos = start;
-	
+
 	if (gVerboseLog) {
 		lnk::log("binding weak symbols\n            start %p, end %p", start, end);
 	}
-	
+
 	/* Data retrieved from the opcodes */
 	int libraryOrdinal = 0;
 	int segmentIndex = 0;
@@ -903,33 +910,33 @@ void MachObject::readWeakBind(const uint8_t* start, const uint8_t* end)
 	uint8_t symbolFlags = 0;
 	intptr_t addend = 0;
 	uint8_t type = 0;
-	
+
 	/* XXX: get from segdata */
 	uintptr_t segmentEndAddress = 0;
 	uintptr_t address = 0;
-	
+
 	uint32_t count;
 	uint32_t skip;
-	
+
 	/* Parse opcodes */
 	while (pos < end) {
 		uint8_t opcode = *(pos) & BIND_OPCODE_MASK;
 		uint8_t immediate = *(pos) & BIND_IMMEDIATE_MASK;
-		
+
 		pos++;
-		
+
 		switch (opcode) {
 			case BIND_OPCODE_DONE:
-			{	
+			{
 				break;
 			}
 			case BIND_OPCODE_SET_DYLIB_ORDINAL_IMM:
-			{	
+			{
 				libraryOrdinal = immediate;
 				break;
 			}
 			case BIND_OPCODE_SET_DYLIB_ORDINAL_ULEB:
-			{	
+			{
 				libraryOrdinal = (int)read_uleb128(pos, end);
 				break;
 			}
@@ -951,9 +958,9 @@ void MachObject::readWeakBind(const uint8_t* start, const uint8_t* end)
 			case BIND_OPCODE_SET_SEGMENT_AND_OFFSET_ULEB:
 			{
 				segmentIndex = immediate;
-				
+
 				address = segActualLoadAddr(segmentIndex) + read_uleb128(pos, end);
-				segmentEndAddress = segActualEndAddr(segmentIndex); 
+				segmentEndAddress = segActualEndAddr(segmentIndex);
 				break;
 			}
 			case BIND_OPCODE_SET_SYMBOL_TRAILING_FLAGS_IMM:
@@ -963,14 +970,14 @@ void MachObject::readWeakBind(const uint8_t* start, const uint8_t* end)
 				while (*pos != '\0')
 					++pos;
 				++pos;
-				
+
 				break;
 			}
 			case BIND_OPCODE_DO_BIND:
 			{
-				if ( address >= segmentEndAddress ) 
+				if ( address >= segmentEndAddress )
 					throwBadBindingAddress(address, segmentEndAddress, segmentIndex, start, end, pos);
-				
+
 				/*
 				this->bind(address,
 						   type,
@@ -980,15 +987,15 @@ void MachObject::readWeakBind(const uint8_t* start, const uint8_t* end)
 						   libraryOrdinal,
 						   "weak");
 				*/
-				
+
 				address += sizeof(intptr_t);
 				break;
 			}
 			case BIND_OPCODE_DO_BIND_ADD_ADDR_ULEB:
 			{
-				if ( address >= segmentEndAddress ) 
+				if ( address >= segmentEndAddress )
 					throwBadBindingAddress(address, segmentEndAddress, segmentIndex, start, end, pos);
-				
+
 				/*
 				this->bind(address,
 						   type,
@@ -998,13 +1005,13 @@ void MachObject::readWeakBind(const uint8_t* start, const uint8_t* end)
 						   libraryOrdinal,
 						   "weak");
 				*/
-				
+
 				address += read_uleb128(pos, end) + sizeof(intptr_t);
 				break;
 			}
 			case BIND_OPCODE_DO_BIND_ADD_ADDR_IMM_SCALED:
 			{
-				if ( address >= segmentEndAddress ) 
+				if ( address >= segmentEndAddress )
 					throwBadBindingAddress(address, segmentEndAddress, segmentIndex, start, end, pos);
 				/*
 				this->bind(address,
@@ -1015,7 +1022,7 @@ void MachObject::readWeakBind(const uint8_t* start, const uint8_t* end)
 						   libraryOrdinal,
 						   "weak");
 				*/
-				
+
 				address += immediate*sizeof(intptr_t) + sizeof(intptr_t);
 				break;
 			}
@@ -1024,7 +1031,7 @@ void MachObject::readWeakBind(const uint8_t* start, const uint8_t* end)
 				count = read_uleb128(pos, end);
 				skip = read_uleb128(pos, end);
 				for (uint32_t i=0; i < count; ++i) {
-					if ( address >= segmentEndAddress ) 
+					if ( address >= segmentEndAddress )
 						throwBadBindingAddress(address, segmentEndAddress, segmentIndex, start, end, pos);
 					/*
 					this->bind(address,
@@ -1035,7 +1042,7 @@ void MachObject::readWeakBind(const uint8_t* start, const uint8_t* end)
 							   libraryOrdinal,
 							   "weak");
 					*/
-					
+
 					address += skip + sizeof(intptr_t);
 				}
 				break;
@@ -1049,14 +1056,14 @@ void MachObject::readWeakBind(const uint8_t* start, const uint8_t* end)
 	}
 }
 
-void MachObject::readBind(const uint8_t* start, const uint8_t* end) 
+void MachObject::readBind(const uint8_t* start, const uint8_t* end)
 {
 	const uint8_t* pos = start;
-	
+
 	if (gVerboseLog) {
 		lnk::log("binding non-lazy symbols\n            start %p, end %p", start, end);
 	}
-	
+
 	/* Data retrieved from the opcodes */
 	int libraryOrdinal = 0;
 	int segmentIndex = 0;
@@ -1064,35 +1071,35 @@ void MachObject::readBind(const uint8_t* start, const uint8_t* end)
 	uint8_t symbolFlags = 0;
 	intptr_t addend = 0;
 	uint8_t type = 0;
-	
+
 	/* XXX: get from segdata */
 	uintptr_t segmentEndAddress = 0;
 	uintptr_t address = 0;
-	
+
 	uint32_t count;
 	uint32_t skip;
 	bool done = false;
-	
+
 	/* Parse opcodes */
 	while (!done && pos < end) {
 		uint8_t opcode = *(pos) & BIND_OPCODE_MASK;
 		uint8_t immediate = *(pos) & BIND_IMMEDIATE_MASK;
-		
+
 		pos++;
-		
+
 		switch (opcode) {
 			case BIND_OPCODE_DONE:
-			{	
+			{
 				done = true;
 				break;
 			}
 			case BIND_OPCODE_SET_DYLIB_ORDINAL_IMM:
-			{	
+			{
 				libraryOrdinal = immediate;
 				break;
 			}
 			case BIND_OPCODE_SET_DYLIB_ORDINAL_ULEB:
-			{	
+			{
 				libraryOrdinal = (int)read_uleb128(pos, end);
 				break;
 			}
@@ -1125,9 +1132,9 @@ void MachObject::readBind(const uint8_t* start, const uint8_t* end)
 			case BIND_OPCODE_SET_SEGMENT_AND_OFFSET_ULEB:
 			{
 				segmentIndex = immediate;
-				
+
 				address = segActualLoadAddr(segmentIndex) + read_uleb128(pos, end);
-				segmentEndAddress = segActualEndAddr(segmentIndex); 
+				segmentEndAddress = segActualEndAddr(segmentIndex);
 				break;
 			}
 			case BIND_OPCODE_SET_SYMBOL_TRAILING_FLAGS_IMM:
@@ -1137,14 +1144,14 @@ void MachObject::readBind(const uint8_t* start, const uint8_t* end)
 				while (*pos != '\0')
 					++pos;
 				++pos;
-				
+
 				break;
 			}
 			case BIND_OPCODE_DO_BIND:
 			{
-				if ( address >= segmentEndAddress ) 
+				if ( address >= segmentEndAddress )
 					throwBadBindingAddress(address, segmentEndAddress, segmentIndex, start, end, pos);
-				
+
 				this->bind(address,
 						   type,
 						   symbolName,
@@ -1152,15 +1159,15 @@ void MachObject::readBind(const uint8_t* start, const uint8_t* end)
 						   addend,
 						   libraryOrdinal,
 						   "");
-				
+
 				address += sizeof(intptr_t);
 				break;
 			}
 			case BIND_OPCODE_DO_BIND_ADD_ADDR_ULEB:
 			{
-				if ( address >= segmentEndAddress ) 
+				if ( address >= segmentEndAddress )
 					throwBadBindingAddress(address, segmentEndAddress, segmentIndex, start, end, pos);
-				
+
 				this->bind(address,
 						   type,
 						   symbolName,
@@ -1168,16 +1175,16 @@ void MachObject::readBind(const uint8_t* start, const uint8_t* end)
 						   addend,
 						   libraryOrdinal,
 						   "");
-				
-				
+
+
 				address += read_uleb128(pos, end) + sizeof(intptr_t);
 				break;
 			}
 			case BIND_OPCODE_DO_BIND_ADD_ADDR_IMM_SCALED:
 			{
-				if ( address >= segmentEndAddress ) 
+				if ( address >= segmentEndAddress )
 					throwBadBindingAddress(address, segmentEndAddress, segmentIndex, start, end, pos);
-				
+
 				this->bind(address,
 						   type,
 						   symbolName,
@@ -1185,8 +1192,8 @@ void MachObject::readBind(const uint8_t* start, const uint8_t* end)
 						   addend,
 						   libraryOrdinal,
 						   "");
-				
-				
+
+
 				address += immediate*sizeof(intptr_t) + sizeof(intptr_t);
 				break;
 			}
@@ -1195,9 +1202,9 @@ void MachObject::readBind(const uint8_t* start, const uint8_t* end)
 				count = read_uleb128(pos, end);
 				skip = read_uleb128(pos, end);
 				for (uint32_t i=0; i < count; ++i) {
-					if ( address >= segmentEndAddress ) 
+					if ( address >= segmentEndAddress )
 						throwBadBindingAddress(address, segmentEndAddress, segmentIndex, start, end, pos);
-					
+
 					this->bind(address,
 							   type,
 							   symbolName,
@@ -1205,7 +1212,7 @@ void MachObject::readBind(const uint8_t* start, const uint8_t* end)
 							   addend,
 							   libraryOrdinal,
 							   "");
-					
+
 					address += skip + sizeof(intptr_t);
 				}
 				break;
@@ -1233,20 +1240,20 @@ void MachObject::classicBindIndirect()
 		if (cmd->cmd == LC_SEGMENT_COMMAND) {
 			const macho_segment_command* seg =
 			(macho_segment_command*)cmd;
-			
+
 			const macho_section* const sectionsStart =
 			(macho_section*)((char*)seg + sizeof(macho_segment_command));
-			
+
 			const  macho_section* const sectionsEnd =
 			&sectionsStart[seg->nsects];
-			
+
 			for (const macho_section* sect=sectionsStart; sect < sectionsEnd; ++sect)
 			{
 				bool isLazySymbol = false;
 				const uint8_t type = sect->flags & SECTION_TYPE;
 				uint32_t elementSize = sizeof(uintptr_t);
 				uint32_t elementCount = sect->size / elementSize;
-				
+
 				if ( type == S_NON_LAZY_SYMBOL_POINTERS ) {
 					if ( ! bindNonLazys )
 						continue;
@@ -1260,16 +1267,16 @@ void MachObject::classicBindIndirect()
 				else {
 					continue;
 				}
-				
+
 				const uint32_t indirectTableOffset = sect->reserved1;
 				uint8_t* ptrToBind = (uint8_t*)(sect->addr + fSlide);
 				for (uint32_t j=0; j < elementCount; ++j, ptrToBind += elementSize) {
 					uint32_t symbolIndex = indirectTable[indirectTableOffset + j];
 					if ( symbolIndex == INDIRECT_SYMBOL_LOCAL) {
-						
+
 						/* LOCA PEOPLE! */
 						//lnk::log("classicBindIndirect: [local] *%p = %p", ptrToBind, *ptrToBind);
-						
+
 						*((uintptr_t*)ptrToBind) += this->fSlide;
 					}
 					else if ( symbolIndex == INDIRECT_SYMBOL_ABS) {
@@ -1281,14 +1288,14 @@ void MachObject::classicBindIndirect()
 						if ( symbolIndex == 0 ) {
 							lnk::halt("malformed classic image!");
 						}
-						
+
 						/* actually do stuff */
 						const char* symbolName = &fStrings[sym->n_un.n_strx];
 						uint8_t symbolFlags = 0; /* currently unused */
 						uint8_t ord = GET_LIBRARY_ORDINAL(sym->n_desc);
-						
+
 						//lnk::log("classicBindIndirect: %s, ord: %d:(%s)", symbolName, ord, fDependencies[ord-1]->getShortName());
-						
+
 						bind((uintptr_t)ptrToBind,
 							 BIND_TYPE_POINTER,
 							 symbolName,
@@ -1308,13 +1315,13 @@ void MachObject::classicBindIndirect()
 void MachObject::classicBindExterns()
 {
 	const uintptr_t relocBase = getClassicRelocBase();
-	
+
 	const relocation_info* const relocsStart =
 	(struct relocation_info*)(&fLinkEditBase[fDynamicInfo->extreloff]);
-	
+
 	const relocation_info* const relocsEnd =
 	&relocsStart[fDynamicInfo->nextrel];
-	
+
 	for (const relocation_info* reloc=relocsStart; reloc < relocsEnd; ++reloc)
 	{
 		if (reloc->r_length == RELOC_SIZE) {
@@ -1326,20 +1333,20 @@ void MachObject::classicBindExterns()
 
 				if ( ((undefinedSymbol->n_type & N_TYPE) == N_SECT) && ((undefinedSymbol->n_desc & N_ARM_THUMB_DEF) != 0) ) {
 					value -= (undefinedSymbol->n_value+1);
-					
+
 					lnk::halt("weird arm thumb thing detected!");
 				}
 				else {
 					/* is undefined or non-weak symbol, so do subtraction to get addend */
 					value -= undefinedSymbol->n_value;
 				}
-				
+
 				const char* symbolName = &fStrings[undefinedSymbol->n_un.n_strx];
 				uint8_t symbolFlags = 0; /* currently unused */
 				uint8_t ord = GET_LIBRARY_ORDINAL(undefinedSymbol->n_desc);
-				
+
 				//lnk::log("classicBindExtern: %s, ord: %d:(%s)", symbolName, ord, fDependencies[ord-1]->getShortName());
-				
+
 				/* bind */
 				bind((uintptr_t)location,
 					 BIND_TYPE_POINTER,
@@ -1376,20 +1383,20 @@ void MachObject::doBindSymbols()
 		if (!fDyldInfo) {
 			lnk::halt("no dyld info section");
 		}
-		
+
 		/* Bind opcodes */
 		this->readBind(addUintPtr2(fLinkEditBase, fDyldInfo->bind_off),
 					   addUintPtr3(fLinkEditBase, fDyldInfo->bind_off, fDyldInfo->bind_size));
-		
+
 		this->readWeakBind(addUintPtr2(fLinkEditBase, fDyldInfo->weak_bind_off),
 						   addUintPtr3(fLinkEditBase, fDyldInfo->weak_bind_off, fDyldInfo->weak_bind_size));
-		
+
 		this->readLazyBind(addUintPtr2(fLinkEditBase, fDyldInfo->lazy_bind_off),
 						   addUintPtr3(fLinkEditBase, fDyldInfo->lazy_bind_off, fDyldInfo->lazy_bind_size));
 	}
 }
 
-void MachObject::doRebase() 
+void MachObject::doRebase()
 {
 	if (fIsClassic)
 	{
@@ -1420,48 +1427,48 @@ ImageType MachObject::getImageType()
 void MachObject::parseLoadCommands()
 {
 	const macho_header* mh = fHeader;
-	
+
 	/* load commands */
 	size_t offset = sizeof(macho_header);
 	uint32_t ncmds = 0;
 	uint32_t segCount = 0; /* count segments */
 	uint8_t* addr = (uint8_t*)mh;
 	bool compressed;
-	
+
 	/* symtab */
 	const struct nlist* symbolTable = NULL;
 	const char* symbolTableStrings = NULL;
-	
+
 	ncmds = mh->ncmds;
-	
+
 	if (ncmds == 0) {
 		lnk::halt("segmentless macho file, probably a memory goof");
 	}
-	
+
 	while (ncmds--) {
 		/* LC pointer */
-		struct load_command	*lcp = 
+		struct load_command	*lcp =
 		(struct load_command *)(addr + offset);
-		
+
 		//lnk::log("loading load command @ %p", addr + offset);
 
 		offset += lcp->cmdsize;
-		
+
 		switch (lcp->cmd) {
 			case LC_SEGMENT:
 			{
 				fSegmentLoadCommands[segCount] = (macho_segment_command*)lcp;
 				macho_segment_command* seg = (macho_segment_command*)lcp;
-				
+
 				if (gVerboseLog) {
 					lnk::log("processed segment {size=%d, name=%s}", lcp->cmdsize, seg->segname);
 				}
-				
+
 				/* update global bits pointing to different things */
 				if ((strcmp(seg->segname, SEG_LINKEDIT) == 0)) {
 					fLinkEditBase = (uint8_t*)(segActualLoadAddr(segCount) - segFileOffset(segCount));
 				}
-				
+
 				segCount ++;
 				break;
 			}
@@ -1484,10 +1491,10 @@ void MachObject::parseLoadCommands()
 			{
 				const struct dylib_command* dylib = (struct dylib_command*)lcp;
 				const char* nn = (char*)lcp + dylib->dylib.name.offset;
-				
+
 				/* XXX: sanity check on the string */
-				
-				
+
+
 				/*
 				 * Load the library that we depend on and add it to
 				 * the list of dependencies for this image.
@@ -1498,17 +1505,17 @@ void MachObject::parseLoadCommands()
 					fDepCount++;
 				}
 				else {
-					/* should get caught out by loadLibrary, but this is 
+					/* should get caught out by loadLibrary, but this is
 					 * just in case */
 					lnk::halt("DEP_INIT: %s failed to load", nn);
 				}
-				
-				if (lcp->cmd == LC_REEXPORT_DYLIB) 
+
+				if (lcp->cmd == LC_REEXPORT_DYLIB)
 				{
 					fReExports[fReExportCount] = dep;
 					fReExportCount++;
 				}
-				
+
 				break;
 			}
 			case LC_SYMTAB:
@@ -1516,7 +1523,7 @@ void MachObject::parseLoadCommands()
 				if (fLinkEditBase == NULL) {
 					lnk::halt("LC_SYMTAB before linkedit segment!");
 				}
-				
+
 				const struct symtab_command* symtab = (struct symtab_command*)lcp;
 				symbolTableStrings = (const char*)&fLinkEditBase[symtab->stroff];
 				symbolTable = (struct nlist*)(&fLinkEditBase[symtab->symoff]);
@@ -1539,20 +1546,20 @@ void MachObject::parseLoadCommands()
 			}
 		}
 	}
-	
+
 	fSegmentsCount = segCount;
-	
+
 	/* Classic */
 	if (!compressed) {
 		/* Classic flag used everywhere by the loader */
 		fIsClassic = true;
-		
+
 		/* these are needed by the classic linker */
 		fStrings = symbolTableStrings;
 		fSymtab = symbolTable;
-		
+
 		lnk::log("Using a classic loader for '%s'", getShortName());
 	}
-	
+
 	this->processSections();
 }

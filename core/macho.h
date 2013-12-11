@@ -9,6 +9,7 @@
 #define core_macho_h
 
 #include <sys/types.h>
+#include <stdint.h>
 
 #define LC_SEGMENT_COMMAND	LC_SEGMENT
 
@@ -52,7 +53,7 @@ struct arm_thread_command {
 	uint32_t	cmdsize;	/* total size of this command */
 	uint32_t	flavor;
 	uint32_t	count;
-	
+
 	struct arm_thread_state state;
 };
 

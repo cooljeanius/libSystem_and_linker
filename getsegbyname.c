@@ -2,14 +2,14 @@
  * Copyright (c) 1999 Apple Computer, Inc. All rights reserved.
  *
  * @APPLE_LICENSE_HEADER_START@
- * 
+ *
  * This file contains Original Code and/or Modifications of Original Code
  * as defined in and that are subject to the Apple Public Source License
  * Version 2.0 (the 'License'). You may not use this file except in
  * compliance with the License. Please obtain a copy of the License at
  * http://www.opensource.apple.com/apsl/ and read it before using this
  * file.
- * 
+ *
  * The Original Code and all software distributed under the License are
  * distributed on an 'AS IS' basis, WITHOUT WARRANTY OF ANY KIND, EITHER
  * EXPRESS OR IMPLIED, AND APPLE HEREBY DISCLAIMS ALL SUCH WARRANTIES,
@@ -17,7 +17,7 @@
  * FITNESS FOR A PARTICULAR PURPOSE, QUIET ENJOYMENT OR NON-INFRINGEMENT.
  * Please see the License for the specific language governing rights and
  * limitations under the License.
- * 
+ *
  * @APPLE_LICENSE_HEADER_END@
  */
 #include <mach-o/ldsyms.h>
@@ -25,7 +25,9 @@
 #ifndef __OPENSTEP__
 
 #ifndef RLD
+#ifdef HAVE_CRT_EXTERNS_H
 #include <crt_externs.h>
+#endif /* HAVE_CRT_EXTERNS_H */
 #endif /* !defined(RLD) */
 
 #else /* defined(__OPENSTEP__) */
@@ -79,7 +81,7 @@ char *segname)
 #else /* defined(RLD) */
 	mhp = (struct mach_header *)(&_mh_execute_header);
 #endif /* defined(RLD) */
-        
+
 	sgp = (struct segment_command *)
 	      ((char *)mhp + sizeof(struct mach_header));
 	for(i = 0; i < mhp->ncmds; i++){
@@ -107,7 +109,7 @@ char *segname)
 #else /* defined(RLD) */
 	    mhp = (struct mach_header_64 *)(&_mh_execute_header);
 #endif /* defined(RLD) */
-        
+
 	sgp = (struct segment_command_64 *)
 	      ((char *)mhp + sizeof(struct mach_header_64));
 	for(i = 0; i < mhp->ncmds; i++){

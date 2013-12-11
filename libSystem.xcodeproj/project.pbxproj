@@ -486,9 +486,86 @@
 		1426F86F15C56F35007DF98B /* Environ.c in Sources */ = {isa = PBXBuildFile; fileRef = 1426F86E15C56F35007DF98B /* Environ.c */; };
 		1426F87115C57402007DF98B /* _simple.c in Sources */ = {isa = PBXBuildFile; fileRef = 1426F87015C57402007DF98B /* _simple.c */; };
 		1426F87F15C5BEB0007DF98B /* ctypes_non_inline.c in Sources */ = {isa = PBXBuildFile; fileRef = 1426F87E15C5BEB0007DF98B /* ctypes_non_inline.c */; };
-		A5584B3315DACEBF00253B92 /* cpu_capabilities.h in Sources */ = {isa = PBXBuildFile; fileRef = A5584B3015DACE8500253B92 /* cpu_capabilities.h */; };
-		A5584B3415DACEBF00253B92 /* arch.h in Sources */ = {isa = PBXBuildFile; fileRef = A5584B2E15DACE4000253B92 /* arch.h */; };
-		A5584B3515DACEBF00253B92 /* reloc.h in Sources */ = {isa = PBXBuildFile; fileRef = A5584B2C15DACE2800253B92 /* reloc.h */; };
+		A53A654417C191D10013DA23 /* assembly.h in Headers */ = {isa = PBXBuildFile; fileRef = 011AD4391559D3FD00C2DCF5 /* assembly.h */; };
+		A53A654517C191DC0013DA23 /* LX_sched.h in Headers */ = {isa = PBXBuildFile; fileRef = 011FDA591544875C0003A0BA /* LX_sched.h */; };
+		A53A654617C191DC0013DA23 /* BSDCompat.h in Headers */ = {isa = PBXBuildFile; fileRef = 01CF54291566A31600F14317 /* BSDCompat.h */; };
+		A53A654717C191E30013DA23 /* kernelrpc.h in Headers */ = {isa = PBXBuildFile; fileRef = 01E4B1AC158E084B000AD388 /* kernelrpc.h */; };
+		A53A654817C191EE0013DA23 /* NRSyscall.h in Headers */ = {isa = PBXBuildFile; fileRef = 01B8D03E154B3E5400A32AC0 /* NRSyscall.h */; };
+		A53A654917C191F80013DA23 /* _simple.h in Headers */ = {isa = PBXBuildFile; fileRef = 1426F87215C57437007DF98B /* _simple.h */; };
+		A53A654A17C192050013DA23 /* aclvar.h in Headers */ = {isa = PBXBuildFile; fileRef = 017A99981577A3DF00C17AD1 /* aclvar.h */; };
+		A53A654B17C1920E0013DA23 /* uuidP.h in Headers */ = {isa = PBXBuildFile; fileRef = 014880D815761A8F009C8349 /* uuidP.h */; };
+		A53A654C17C192170013DA23 /* cclass.h in Headers */ = {isa = PBXBuildFile; fileRef = 014880A315751DBF009C8349 /* cclass.h */; };
+		A53A654D17C192170013DA23 /* cname.h in Headers */ = {isa = PBXBuildFile; fileRef = 014880A415751DC0009C8349 /* cname.h */; };
+		A53A654E17C192170013DA23 /* regex2.h in Headers */ = {isa = PBXBuildFile; fileRef = 014880A815751DC0009C8349 /* regex2.h */; };
+		A53A654F17C192170013DA23 /* utils.h in Headers */ = {isa = PBXBuildFile; fileRef = 014880AB15751DC0009C8349 /* utils.h */; };
+		A53A655017C1921E0013DA23 /* spawn_internal.h in Headers */ = {isa = PBXBuildFile; fileRef = 014880851574F099009C8349 /* spawn_internal.h */; };
+		A53A655117C1921E0013DA23 /* spawn_private.h in Headers */ = {isa = PBXBuildFile; fileRef = 014880841574EF62009C8349 /* spawn_private.h */; };
+		A53A655217C192230013DA23 /* _fbsd_compat_.h in Headers */ = {isa = PBXBuildFile; fileRef = 0148805F1574C2C0009C8349 /* _fbsd_compat_.h */; };
+		A53A655317C192230013DA23 /* libc_private.h in Headers */ = {isa = PBXBuildFile; fileRef = 0148805D1574C1ED009C8349 /* libc_private.h */; };
+		A53A655417C192230013DA23 /* namespace.h in Headers */ = {isa = PBXBuildFile; fileRef = 0148805A1574C191009C8349 /* namespace.h */; };
+		A53A655517C192230013DA23 /* un-namespace.h in Headers */ = {isa = PBXBuildFile; fileRef = 0148805B1574C191009C8349 /* un-namespace.h */; };
+		A53A655617C1922E0013DA23 /* gdtoa_fltrnds.h in Headers */ = {isa = PBXBuildFile; fileRef = 0148802A1572363C009C8349 /* gdtoa_fltrnds.h */; };
+		A53A655717C1922E0013DA23 /* gd_qnan.h in Headers */ = {isa = PBXBuildFile; fileRef = 014880251572347F009C8349 /* gd_qnan.h */; };
+		A53A655817C1922E0013DA23 /* arith.h in Headers */ = {isa = PBXBuildFile; fileRef = 0148802415723474009C8349 /* arith.h */; };
+		A53A655917C1922E0013DA23 /* gdtoa.h in Headers */ = {isa = PBXBuildFile; fileRef = 0148802315723462009C8349 /* gdtoa.h */; };
+		A53A655A17C1922E0013DA23 /* gdtoaimp.h in Headers */ = {isa = PBXBuildFile; fileRef = 0148802215723455009C8349 /* gdtoaimp.h */; };
+		A53A655B17C1923A0013DA23 /* private.h in Headers */ = {isa = PBXBuildFile; fileRef = 017A99B01577ABA600C17AD1 /* private.h */; };
+		A53A655C17C1923A0013DA23 /* tzfile.h in Headers */ = {isa = PBXBuildFile; fileRef = 017A99B11577ABA600C17AD1 /* tzfile.h */; };
+		A53A655D17C192440013DA23 /* mblocal.h in Headers */ = {isa = PBXBuildFile; fileRef = 015AB4441589389C00AE7406 /* mblocal.h */; };
+		A53A655E17C192670013DA23 /* _setjmp.h in Headers */ = {isa = PBXBuildFile; fileRef = 011AD5B21562615B00C2DCF5 /* _setjmp.h */; };
+		A53A655F17C1926F0013DA23 /* ethertypes.h in Headers */ = {isa = PBXBuildFile; fileRef = 01D22C0E154D4D3800C205D1 /* ethertypes.h */; };
+		A53A656017C1926F0013DA23 /* if_ether.h in Headers */ = {isa = PBXBuildFile; fileRef = 01D22C0D154D4CC000C205D1 /* if_ether.h */; };
+		A53A656117C1927E0013DA23 /* rand48.h in Headers */ = {isa = PBXBuildFile; fileRef = 014880F015761C87009C8349 /* rand48.h */; };
+		A53A656217C1927E0013DA23 /* ctype_private.h in Headers */ = {isa = PBXBuildFile; fileRef = 01D22C62154DEE9500C205D1 /* ctype_private.h */; };
+		A53A656317C1928B0013DA23 /* timelocal.h in Headers */ = {isa = PBXBuildFile; fileRef = 014880A215751D30009C8349 /* timelocal.h */; };
+		A53A656417C1928B0013DA23 /* lmessages.h in Headers */ = {isa = PBXBuildFile; fileRef = 0148809E15751D0F009C8349 /* lmessages.h */; };
+		A53A656517C1928B0013DA23 /* lmonetary.h in Headers */ = {isa = PBXBuildFile; fileRef = 0148809F15751D0F009C8349 /* lmonetary.h */; };
+		A53A656617C1928B0013DA23 /* lnumeric.h in Headers */ = {isa = PBXBuildFile; fileRef = 014880A015751D10009C8349 /* lnumeric.h */; };
+		A53A656717C1928B0013DA23 /* setlocale.h in Headers */ = {isa = PBXBuildFile; fileRef = 014880A115751D10009C8349 /* setlocale.h */; };
+		A53A656817C1928B0013DA23 /* xlocale_private.h in Headers */ = {isa = PBXBuildFile; fileRef = 0148809D15751C4F009C8349 /* xlocale_private.h */; };
+		A53A656917C1928B0013DA23 /* collate.h in Headers */ = {isa = PBXBuildFile; fileRef = 0148809815751B06009C8349 /* collate.h */; };
+		A53A656A17C192980013DA23 /* __BClangGlue.h in Headers */ = {isa = PBXBuildFile; fileRef = 01A7EAEF153F70CA00A5DE57 /* __BClangGlue.h */; };
+		A53A656B17C192A00013DA23 /* Bieee.h in Headers */ = {isa = PBXBuildFile; fileRef = 01F9FDDF1542FABD00F63D81 /* Bieee.h */; };
+		A53A656C17C192B50013DA23 /* fileext.h in Headers */ = {isa = PBXBuildFile; fileRef = 01A7EA70153F690400A5DE57 /* fileext.h */; };
+		A53A656D17C192B50013DA23 /* floatio.h in Headers */ = {isa = PBXBuildFile; fileRef = 01A7EA74153F690400A5DE57 /* floatio.h */; };
+		A53A656E17C192B50013DA23 /* fvwrite.h in Headers */ = {isa = PBXBuildFile; fileRef = 01A7EA83153F690400A5DE57 /* fvwrite.h */; };
+		A53A656F17C192B50013DA23 /* glue.h in Headers */ = {isa = PBXBuildFile; fileRef = 01A7EA89153F690400A5DE57 /* glue.h */; };
+		A53A657017C192B50013DA23 /* local.h in Headers */ = {isa = PBXBuildFile; fileRef = 01A7EA8A153F690400A5DE57 /* local.h */; };
+		A53A657117C192B50013DA23 /* wcio.h in Headers */ = {isa = PBXBuildFile; fileRef = 01A7EAAB153F690400A5DE57 /* wcio.h */; };
+		A53A657217C192C80013DA23 /* dlmalloc.h in Headers */ = {isa = PBXBuildFile; fileRef = 01480A61153F0EBE00552A80 /* dlmalloc.h */; };
+		A53A657317C192D00013DA23 /* __dirent.h in Headers */ = {isa = PBXBuildFile; fileRef = 0148805E1574C23E009C8349 /* __dirent.h */; };
+		A53A657417C192D00013DA23 /* telldir.h in Headers */ = {isa = PBXBuildFile; fileRef = 0148805C1574C1BF009C8349 /* telldir.h */; };
+		A53A657517C192D60013DA23 /* LX_fcntl.h in Headers */ = {isa = PBXBuildFile; fileRef = 01A7EAFA15404A1900A5DE57 /* LX_fcntl.h */; };
+		A53A657617C192D60013DA23 /* LX_ioctl.h in Headers */ = {isa = PBXBuildFile; fileRef = 011AD5AA15617FC000C2DCF5 /* LX_ioctl.h */; };
+		A53A657717C192D60013DA23 /* SjLj_Internal.h in Headers */ = {isa = PBXBuildFile; fileRef = 011AD5AF15625EF200C2DCF5 /* SjLj_Internal.h */; };
+		A53A657817C192D60013DA23 /* linux_ioctl.h in Headers */ = {isa = PBXBuildFile; fileRef = 01B523471568DC6F003E68E6 /* linux_ioctl.h */; };
+		A53A657917C192E70013DA23 /* asm_help.h in Headers */ = {isa = PBXBuildFile; fileRef = 01E7280415372D0B00F10738 /* asm_help.h */; };
+		A53A657A17C192E70013DA23 /* reg_help.h in Headers */ = {isa = PBXBuildFile; fileRef = 01E7280515372D0B00F10738 /* reg_help.h */; };
+		A53A657B17C192FA0013DA23 /* pthread_spinlock.h in Headers */ = {isa = PBXBuildFile; fileRef = 01A50B01157C0646000203C2 /* pthread_spinlock.h */; };
+		A53A657C17C192FA0013DA23 /* pthread_workqueue.h in Headers */ = {isa = PBXBuildFile; fileRef = 01A50B02157C0646000203C2 /* pthread_workqueue.h */; };
+		A53A657D17C192FA0013DA23 /* posix_sched.h in Headers */ = {isa = PBXBuildFile; fileRef = 01A50B03157C0646000203C2 /* posix_sched.h */; };
+		A53A657E17C192FA0013DA23 /* pthread_impl.h in Headers */ = {isa = PBXBuildFile; fileRef = 01A50B04157C0646000203C2 /* pthread_impl.h */; };
+		A53A657F17C192FA0013DA23 /* sched.h in Headers */ = {isa = PBXBuildFile; fileRef = 01A50B05157C0646000203C2 /* sched.h */; };
+		A53A658017C192FA0013DA23 /* pthread_internals.h in Headers */ = {isa = PBXBuildFile; fileRef = 01A50AF6157C0633000203C2 /* pthread_internals.h */; };
+		A53A658117C192FA0013DA23 /* pthread.h in Headers */ = {isa = PBXBuildFile; fileRef = 01A50AF7157C0633000203C2 /* pthread.h */; };
+		A53A658217C192FA0013DA23 /* pthread_machdep.h in Headers */ = {isa = PBXBuildFile; fileRef = 01A50AF8157C0633000203C2 /* pthread_machdep.h */; };
+		A53A658317C193030013DA23 /* OSUAtomic.h in Headers */ = {isa = PBXBuildFile; fileRef = 01B8CD991548A90300A32AC0 /* OSUAtomic.h */; };
+		A53A658417C193070013DA23 /* OSThread.h in Headers */ = {isa = PBXBuildFile; fileRef = 01B8CD9A1549C50900A32AC0 /* OSThread.h */; };
+		A53A658517C1930E0013DA23 /* OSLog.h in Headers */ = {isa = PBXBuildFile; fileRef = 01B8D03C154A147900A32AC0 /* OSLog.h */; };
+		A53A658617C193170013DA23 /* lnk_image.h in Headers */ = {isa = PBXBuildFile; fileRef = 01A7EE6E1542B4BA00A5DE57 /* lnk_image.h */; };
+		A53A658717C1931F0013DA23 /* macho.h in Headers */ = {isa = PBXBuildFile; fileRef = 01A7EAFF154050C200A5DE57 /* macho.h */; };
+		A53A658817C1931F0013DA23 /* lnk_macho.h in Headers */ = {isa = PBXBuildFile; fileRef = 01A7EB0D15405C6A00A5DE57 /* lnk_macho.h */; };
+		A53A658917C193240013DA23 /* lnk_elf.h in Headers */ = {isa = PBXBuildFile; fileRef = 01A7EE491541ED5A00A5DE57 /* lnk_elf.h */; };
+		A53A658A17C193240013DA23 /* elf_format.h in Headers */ = {isa = PBXBuildFile; fileRef = 01BAB8F0154BE23900ACF9DA /* elf_format.h */; };
+		A53A658B17C193290013DA23 /* lnk_cas.h in Headers */ = {isa = PBXBuildFile; fileRef = 01E4B217159166F8000AD388 /* lnk_cas.h */; };
+		A53A658C17C1932E0013DA23 /* lnk_mm.h in Headers */ = {isa = PBXBuildFile; fileRef = 01A7EE5A1542186700A5DE57 /* lnk_mm.h */; };
+		A53A658D17C193340013DA23 /* lnk_util.h in Headers */ = {isa = PBXBuildFile; fileRef = 01A7EB1B1540A1C900A5DE57 /* lnk_util.h */; };
+		A53A658E17C193340013DA23 /* _lnk_log_c.h in Headers */ = {isa = PBXBuildFile; fileRef = 01A7EE501541F0E200A5DE57 /* _lnk_log_c.h */; };
+		A53A658F17C1933B0013DA23 /* lnk_debug.h in Headers */ = {isa = PBXBuildFile; fileRef = 01480A6F153F348E00552A80 /* lnk_debug.h */; };
+		A53A659017C193470013DA23 /* lnk.h in Headers */ = {isa = PBXBuildFile; fileRef = 01A7EAFE1540509100A5DE57 /* lnk.h */; };
+		A5584B3315DACEBF00253B92 /* cpu_capabilities.h in Headers */ = {isa = PBXBuildFile; fileRef = A5584B3015DACE8500253B92 /* cpu_capabilities.h */; };
+		A5584B3415DACEBF00253B92 /* arch.h in Headers */ = {isa = PBXBuildFile; fileRef = A5584B2E15DACE4000253B92 /* arch.h */; };
+		A5584B3515DACEBF00253B92 /* reloc.h in Headers */ = {isa = PBXBuildFile; fileRef = A5584B2C15DACE2800253B92 /* reloc.h */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -1061,7 +1138,6 @@
 		A5584B2C15DACE2800253B92 /* reloc.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = reloc.h; sourceTree = "<group>"; };
 		A5584B2E15DACE4000253B92 /* arch.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = arch.h; sourceTree = "<group>"; };
 		A5584B3015DACE8500253B92 /* cpu_capabilities.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = cpu_capabilities.h; sourceTree = "<group>"; };
-		A5584B9715DACFDE00253B92 /* Possible_matches_for_endian.h.savedSearch */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.xml; path = Possible_matches_for_endian.h.savedSearch; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -1491,7 +1567,6 @@
 		01645F5C15371DFB0006A0C1 = {
 			isa = PBXGroup;
 			children = (
-				A5584B9715DACFDE00253B92 /* Possible_matches_for_endian.h.savedSearch */,
 				A5584B2F15DACE8500253B92 /* machine */,
 				A5584B2D15DACE4000253B92 /* arm */,
 				A5584B2A15DACE2800253B92 /* mach-o */,
@@ -2292,11 +2367,102 @@
 		};
 /* End PBXGroup section */
 
+/* Begin PBXHeadersBuildPhase section */
+		A53A652517C187C80013DA23 /* Headers */ = {
+			isa = PBXHeadersBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				A53A659017C193470013DA23 /* lnk.h in Headers */,
+				A53A658F17C1933B0013DA23 /* lnk_debug.h in Headers */,
+				A53A658D17C193340013DA23 /* lnk_util.h in Headers */,
+				A53A658E17C193340013DA23 /* _lnk_log_c.h in Headers */,
+				A53A658C17C1932E0013DA23 /* lnk_mm.h in Headers */,
+				A53A658B17C193290013DA23 /* lnk_cas.h in Headers */,
+				A53A658917C193240013DA23 /* lnk_elf.h in Headers */,
+				A53A658A17C193240013DA23 /* elf_format.h in Headers */,
+				A53A658717C1931F0013DA23 /* macho.h in Headers */,
+				A53A658817C1931F0013DA23 /* lnk_macho.h in Headers */,
+				A53A658617C193170013DA23 /* lnk_image.h in Headers */,
+				A53A658517C1930E0013DA23 /* OSLog.h in Headers */,
+				A53A658417C193070013DA23 /* OSThread.h in Headers */,
+				A53A658317C193030013DA23 /* OSUAtomic.h in Headers */,
+				A53A657B17C192FA0013DA23 /* pthread_spinlock.h in Headers */,
+				A53A657C17C192FA0013DA23 /* pthread_workqueue.h in Headers */,
+				A53A657D17C192FA0013DA23 /* posix_sched.h in Headers */,
+				A53A657E17C192FA0013DA23 /* pthread_impl.h in Headers */,
+				A53A657F17C192FA0013DA23 /* sched.h in Headers */,
+				A53A658017C192FA0013DA23 /* pthread_internals.h in Headers */,
+				A53A658117C192FA0013DA23 /* pthread.h in Headers */,
+				A53A658217C192FA0013DA23 /* pthread_machdep.h in Headers */,
+				A53A657917C192E70013DA23 /* asm_help.h in Headers */,
+				A53A657A17C192E70013DA23 /* reg_help.h in Headers */,
+				A53A657517C192D60013DA23 /* LX_fcntl.h in Headers */,
+				A53A657617C192D60013DA23 /* LX_ioctl.h in Headers */,
+				A53A657717C192D60013DA23 /* SjLj_Internal.h in Headers */,
+				A53A657817C192D60013DA23 /* linux_ioctl.h in Headers */,
+				A53A657317C192D00013DA23 /* __dirent.h in Headers */,
+				A53A657417C192D00013DA23 /* telldir.h in Headers */,
+				A53A657217C192C80013DA23 /* dlmalloc.h in Headers */,
+				A53A656C17C192B50013DA23 /* fileext.h in Headers */,
+				A53A656D17C192B50013DA23 /* floatio.h in Headers */,
+				A53A656E17C192B50013DA23 /* fvwrite.h in Headers */,
+				A53A656F17C192B50013DA23 /* glue.h in Headers */,
+				A53A657017C192B50013DA23 /* local.h in Headers */,
+				A53A657117C192B50013DA23 /* wcio.h in Headers */,
+				A53A656B17C192A00013DA23 /* Bieee.h in Headers */,
+				A53A656A17C192980013DA23 /* __BClangGlue.h in Headers */,
+				A53A656317C1928B0013DA23 /* timelocal.h in Headers */,
+				A53A656417C1928B0013DA23 /* lmessages.h in Headers */,
+				A53A656517C1928B0013DA23 /* lmonetary.h in Headers */,
+				A53A656617C1928B0013DA23 /* lnumeric.h in Headers */,
+				A53A656717C1928B0013DA23 /* setlocale.h in Headers */,
+				A53A656817C1928B0013DA23 /* xlocale_private.h in Headers */,
+				A53A656917C1928B0013DA23 /* collate.h in Headers */,
+				A53A656117C1927E0013DA23 /* rand48.h in Headers */,
+				A53A656217C1927E0013DA23 /* ctype_private.h in Headers */,
+				A53A655F17C1926F0013DA23 /* ethertypes.h in Headers */,
+				A53A656017C1926F0013DA23 /* if_ether.h in Headers */,
+				A53A655E17C192670013DA23 /* _setjmp.h in Headers */,
+				A53A655D17C192440013DA23 /* mblocal.h in Headers */,
+				A53A655B17C1923A0013DA23 /* private.h in Headers */,
+				A53A655C17C1923A0013DA23 /* tzfile.h in Headers */,
+				A53A655617C1922E0013DA23 /* gdtoa_fltrnds.h in Headers */,
+				A53A655717C1922E0013DA23 /* gd_qnan.h in Headers */,
+				A53A655817C1922E0013DA23 /* arith.h in Headers */,
+				A53A655917C1922E0013DA23 /* gdtoa.h in Headers */,
+				A53A655A17C1922E0013DA23 /* gdtoaimp.h in Headers */,
+				A53A655217C192230013DA23 /* _fbsd_compat_.h in Headers */,
+				A53A655317C192230013DA23 /* libc_private.h in Headers */,
+				A53A655417C192230013DA23 /* namespace.h in Headers */,
+				A53A655517C192230013DA23 /* un-namespace.h in Headers */,
+				A53A655017C1921E0013DA23 /* spawn_internal.h in Headers */,
+				A53A655117C1921E0013DA23 /* spawn_private.h in Headers */,
+				A53A654C17C192170013DA23 /* cclass.h in Headers */,
+				A53A654D17C192170013DA23 /* cname.h in Headers */,
+				A53A654E17C192170013DA23 /* regex2.h in Headers */,
+				A53A654F17C192170013DA23 /* utils.h in Headers */,
+				A53A654B17C1920E0013DA23 /* uuidP.h in Headers */,
+				A53A654A17C192050013DA23 /* aclvar.h in Headers */,
+				A53A654917C191F80013DA23 /* _simple.h in Headers */,
+				A53A654817C191EE0013DA23 /* NRSyscall.h in Headers */,
+				A53A654717C191E30013DA23 /* kernelrpc.h in Headers */,
+				A53A654517C191DC0013DA23 /* LX_sched.h in Headers */,
+				A53A654617C191DC0013DA23 /* BSDCompat.h in Headers */,
+				A53A654417C191D10013DA23 /* assembly.h in Headers */,
+				A5584B3315DACEBF00253B92 /* cpu_capabilities.h in Headers */,
+				A5584B3415DACEBF00253B92 /* arch.h in Headers */,
+				A5584B3515DACEBF00253B92 /* reloc.h in Headers */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXHeadersBuildPhase section */
+
 /* Begin PBXNativeTarget section */
 		01645F6615371DFB0006A0C1 /* dyld */ = {
 			isa = PBXNativeTarget;
 			buildConfigurationList = 01645F7215371DFB0006A0C1 /* Build configuration list for PBXNativeTarget "dyld" */;
 			buildPhases = (
+				A53A652517C187C80013DA23 /* Headers */,
 				01645F6315371DFB0006A0C1 /* Sources */,
 				01645F6415371DFB0006A0C1 /* Frameworks */,
 				01645F6515371DFB0006A0C1 /* ShellScript */,
@@ -2338,7 +2504,7 @@
 /* Begin PBXShellScriptBuildPhase section */
 		01645F6515371DFB0006A0C1 /* ShellScript */ = {
 			isa = PBXShellScriptBuildPhase;
-			buildActionMask = 2147483647;
+			buildActionMask = 12;
 			files = (
 			);
 			inputPaths = (
@@ -2347,7 +2513,7 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
-			shellScript = "#python /Users/PCrew/Developer/Python/BuildTool/main.py";
+			shellScript = "#!/bin/sh\n\nif [ -e /Users/PCrew/Developer/Python/BuildTool/main.py ]; then\n\tenv python /Users/PCrew/Developer/Python/BuildTool/main.py\nfi\n";
 		};
 /* End PBXShellScriptBuildPhase section */
 
@@ -2356,9 +2522,6 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				A5584B3315DACEBF00253B92 /* cpu_capabilities.h in Sources */,
-				A5584B3415DACEBF00253B92 /* arch.h in Sources */,
-				A5584B3515DACEBF00253B92 /* reloc.h in Sources */,
 				01F50BC015B5A8E9006769F0 /* pthread.c in Sources */,
 				01F50BC115B5A8E9006769F0 /* pthread_rwlock.c in Sources */,
 				01F50BC215B5A8E9006769F0 /* pthread_mutex.c in Sources */,
@@ -2848,16 +3011,13 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
+				ASFLAGS = "-dynamic";
 				CLANG_LINK_OBJC_RUNTIME = NO;
 				COPY_PHASE_STRIP = NO;
-				ENABLE_OPENMP_SUPPORT = YES;
 				GCC_ALTIVEC_EXTENSIONS = YES;
 				GCC_AUTO_VECTORIZATION = YES;
 				GCC_C_LANGUAGE_STANDARD = gnu99;
-				GCC_DYNAMIC_NO_PIC = NO;
-				GCC_ENABLE_EXCEPTIONS = YES;
 				GCC_ENABLE_FIX_AND_CONTINUE = YES;
-				GCC_ENABLE_KERNEL_DEVELOPMENT = YES;
 				GCC_ENABLE_SSE3_EXTENSIONS = YES;
 				GCC_ENABLE_SSE41_EXTENSIONS = YES;
 				GCC_ENABLE_SSE42_EXTENSIONS = YES;
@@ -2870,40 +3030,29 @@
 					"DEBUG=1",
 					"$(inherited)",
 				);
-				GCC_SYMBOLS_PRIVATE_EXTERN = NO;
-				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
-				GCC_WARN_ABOUT_GLOBAL_CONSTRUCTORS = YES;
-				GCC_WARN_ABOUT_MISSING_FIELD_INITIALIZERS = YES;
 				GCC_WARN_ABOUT_MISSING_NEWLINE = YES;
-				GCC_WARN_ABOUT_MISSING_PROTOTYPES = YES;
 				GCC_WARN_ABOUT_RETURN_TYPE = YES;
 				GCC_WARN_CHECK_SWITCH_STATEMENTS = YES;
-				GCC_WARN_EFFECTIVE_CPLUSPLUS_VIOLATIONS = YES;
 				GCC_WARN_FOUR_CHARACTER_CONSTANTS = YES;
 				GCC_WARN_HIDDEN_VIRTUAL_FUNCTIONS = YES;
-				GCC_WARN_INITIALIZER_NOT_FULLY_BRACKETED = YES;
 				GCC_WARN_MISSING_PARENTHESES = YES;
-				GCC_WARN_MULTIPLE_DEFINITION_TYPES_FOR_SELECTOR = YES;
 				GCC_WARN_NON_VIRTUAL_DESTRUCTOR = YES;
-				GCC_WARN_PEDANTIC = YES;
-				GCC_WARN_PROTOTYPE_CONVERSION = YES;
 				GCC_WARN_SHADOW = YES;
-				GCC_WARN_SIGN_COMPARE = YES;
 				GCC_WARN_STRICT_SELECTOR_MATCH = YES;
-				GCC_WARN_UNDECLARED_SELECTOR = YES;
 				GCC_WARN_UNKNOWN_PRAGMAS = YES;
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_LABEL = YES;
-				GCC_WARN_UNUSED_PARAMETER = YES;
-				GCC_WARN_UNUSED_VALUE = YES;
-				GCC_WARN_UNUSED_VARIABLE = YES;
 				GENERATE_PKGINFO_FILE = YES;
-				GENERATE_PROFILING_CODE = YES;
 				LD_GENERATE_MAP_FILE = YES;
-				MACH_O_TYPE = mh_execute;
+				OTHER_CFLAGS = (
+					"-fmacro-backtrace-limit=0",
+					"-dynamic",
+				);
 				RUN_CLANG_STATIC_ANALYZER = YES;
 				SCAN_ALL_SOURCE_FILES_FOR_INCLUDES = YES;
 				SDKROOT = iphoneos;
+				VALIDATE_PRODUCT = YES;
+				VERSIONING_SYSTEM = "apple-generic";
 			};
 			name = Debug;
 		};
@@ -2929,11 +3078,11 @@
 				GCC_DYNAMIC_NO_PIC = NO;
 				GCC_ENABLE_CPP_EXCEPTIONS = NO;
 				GCC_ENABLE_CPP_RTTI = NO;
+				GCC_ENABLE_KERNEL_DEVELOPMENT = NO;
 				GCC_ENABLE_OBJC_EXCEPTIONS = NO;
 				GCC_LINK_WITH_DYNAMIC_LIBRARIES = YES;
 				GCC_PREPROCESSOR_DEFINITIONS = "";
 				GCC_VERSION = com.apple.compilers.llvm.clang.1_0;
-				GCC_WARN_ABOUT_MISSING_PROTOTYPES = NO;
 				GENERATE_MASTER_OBJECT_FILE = YES;
 				INSTALL_OWNER = root;
 				KEEP_PRIVATE_EXTERNS = YES;
@@ -2944,6 +3093,7 @@
 					"\"$(SRCROOT)/../launchd/DerivedData/launchd/Build/Products/Release-iphoneos\"",
 				);
 				OTHER_CFLAGS = (
+					"-dynamic",
 					"-D__no_acl__=1",
 					"-no-integrated-as",
 				);
@@ -2954,11 +3104,11 @@
 				PREBINDING = NO;
 				PRESERVE_DEAD_CODE_INITS_AND_TERMS = YES;
 				PRODUCT_NAME = "$(TARGET_NAME)";
-				SDKROOT = macosx;
+				SDKROOT = iphoneos;
 				SUPPORTED_PLATFORMS = "iphonesimulator iphoneos";
+				VALID_ARCHS = "armv7 armv6 i386 ppc ppc64 ppc7400 ppc970 x86_64";
 				VERSIONING_SYSTEM = "apple-generic";
-				VERSION_INFO_BUILDER = asdf;
-				VERSION_INFO_PREFIX = "";
+				VERSION_INFO_BUILDER = root;
 				VERSION_INFO_SUFFIX = _Debug;
 			};
 			name = Debug;

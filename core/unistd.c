@@ -22,6 +22,9 @@
 #include <stdlib.h>
 #include <sys/resource.h>
 #include <string.h>
+#ifdef HAVE_VARARGS_H
+#include <varargs.h>
+#endif
 
 /* Shim Support */
 #include "LX_fcntl.h"
@@ -55,7 +58,7 @@ uflags |= new; }
 #define LX_WEXITED         0x00000004
 #define LX_WCONTINUED      0x00000008
 #define LX_WNOWAIT         0x01000000      /* Don't reap, just poll status.  */
- 
+
 #define LX___WNOTHREAD     0x20000000      /* Don't wait on children of other threads in this group */
 #define LX___WALL          0x40000000      /* Wait on all children, regardless of type */
 #define LX___WCLONE        0x80000000      /* Wait only on non-SIGCHLD children */
@@ -80,14 +83,14 @@ int ioctl(int fd, unsigned long request, ...)
 	 Library friendly va_args version
 	 No idea why they use va_args, honestly.
 	 */
-	
+
 	va_list ap;
 	void * arg;
-	
+
 	va_start(ap, request);
 	arg = va_arg(ap, void *);
 	va_end(ap);
-	
+
 	/* Guts */
 	return ioctl$darwin(fd, request, arg);
 }
@@ -99,7 +102,7 @@ int ioctl(int fd, unsigned long request, ...)
 size_t confstr(int name, char *buf, size_t len)
 {
 	unistd_log("confstr not implemented");
-	
+
 	return 0;
 }
 
@@ -110,30 +113,30 @@ size_t confstr(int name, char *buf, size_t len)
 pid_t wait( int*  status )
 {
 	unistd_log("wait");
-	
+
 	return wait4$LINUX( (pid_t)-1, status, 0, NULL );
 }
 
 pid_t wait3(int*  status, int options, struct rusage*  rusage)
 {
 	unistd_log("wait3");
-	
+
 	return wait4$LINUX( (pid_t)-1, status, options, rusage );
 }
 
 pid_t waitpid(pid_t  pid, int*  status, int  flags)
 {
 	int uflags = 0;
-	
+
 	convertFlag(WNOHANG, LX_WNOHANG);
 	convertFlag(WUNTRACED, LX_WUNTRACED);
 	convertFlag(WCONTINUED, LX_WCONTINUED);
 	convertFlag(WNOWAIT, LX_WNOWAIT);
-	
+
     int ret = wait4$LINUX(pid, status, uflags, NULL);
 
 	unistd_log("waitpid(%d, %p, %d): status = %p, ret = %d", pid, status, uflags, *status, ret);
-	
+
 	return ret;
 }
 
@@ -145,20 +148,20 @@ int reboot(int v)
 int getdtablesize()
 {
 	unistd_log("getdtablesize(): not implemented, returning 20");
-	
+
 	return 20;
 }
 
 int gethostname(char*  buff, size_t  buflen)
 {
 	unistd_log("gethostname(%p, %d)", buff, buflen);
-	
+
 	const char* name = "hostname";
-	
+
     if (1)
     {
         int  namelen = strlen(name);
-		
+
         if ((int)buflen < namelen+1) {
 			return -1;
 		}
@@ -166,7 +169,7 @@ int gethostname(char*  buff, size_t  buflen)
 			memcpy(buff, name, namelen+1);
 		}
 	}
-	
+
 	return 0;
 }
 
@@ -174,7 +177,7 @@ long
 sysconf(int name)
 {
 	unistd_log("sysconf(%d): xxx", name);
-	
+
 	switch (name) {
 		case _SC_OPEN_MAX:
 			return 20;
@@ -188,11 +191,11 @@ sysconf(int name)
 		default:
 			break;
 	}
-	
-	
+
+
 	/* meh */
 	unistd_log("sysconf(%d): unimplemented flag", name);
-	
+
 	return 0;
 }
 
@@ -236,7 +239,7 @@ int setuid(uid_t u)
 gid_t getegid(void)
 {
 	return getgid();
-} 
+}
 
 int getgroups(int dd, gid_t * gr)
 {
@@ -262,19 +265,19 @@ void exit(int code) {
 int fork(void)
 {
 	int ret;
-	
+
 	ret = fork$LINUX();
-	
+
 	//unistd_log("fork: pid = %d", ret);
-	
+
 	if (ret != 0) {
 		/* Parent */
-		
+
 	}
 	else {
 		/* Child */
 	}
-	
+
 	return ret;
 }
 
@@ -287,14 +290,14 @@ int fork(void)
 int n_ioctl(int fd, int request, ...)
 {
 	OSHalt("n_ioctl: obsolete function, do not call!");
-	
+
     va_list ap;
     void * arg;
-	
+
     va_start(ap, request);
     arg = va_arg(ap, void *);
     va_end(ap);
-	
+
     return ioctl$LINUX(fd, request, arg);
 }
 
@@ -306,7 +309,7 @@ int n_ioctl(int fd, int request, ...)
 ssize_t writev(int fd, const struct iovec *iov, int iovcnt)
 {
 	OSHalt("writev (unistd.c)");
-	
+
 	return writev$LINUX(fd, iov, iovcnt);
 }
 
@@ -318,7 +321,7 @@ ssize_t writev(int fd, const struct iovec *iov, int iovcnt)
 ssize_t readv(int fd, const struct iovec *iov, int iovcnt)
 {
 	OSHalt("readv (unistd.c)");
-	
+
 	return readv(fd, iov, iovcnt);
 }
 
@@ -329,7 +332,7 @@ ssize_t readv(int fd, const struct iovec *iov, int iovcnt)
 int execve(const char *path, char *const argv[], char *const envp[])
 {
 	//unistd_log("execve %s", path);
-	
+
 	/* this should work */
 	return execve$LINUX(path, argv, envp);
 }
@@ -342,21 +345,21 @@ int execve(const char *path, char *const argv[], char *const envp[])
 int usleep(useconds_t usec)
 {
 	struct timespec ts;
-	
+
 	ts.tv_sec  = usec/1000000UL;
-	
+
 #ifdef __arm__
     /* avoid divisions and modulos on the ARM */
 	ts.tv_nsec = (usec - ts.tv_sec*1000000UL)*1000;
 #else
 	ts.tv_nsec = (usec % 1000000UL) * 1000UL;
 #endif
-	
+
 	for (;;)
 	{
 		if ( nanosleep( &ts, &ts ) == 0 )
 			return 0;
-		
+
 		// We try again if the nanosleep failure is EINTR.
 		// The other possible failures are EINVAL (which we should pass through),
 		// and ENOSYS, which doesn't happen.
@@ -372,23 +375,23 @@ int usleep(useconds_t usec)
 unsigned int sleep(unsigned int seconds)
 {
     struct timespec  t;
-	
+
 	/* seconds is unsigned, while t.tv_sec is signed
 	 * some people want to do sleep(UINT_MAX), so fake
 	 * support for it by only sleeping 2 billion seconds
 	 */
     if ((int)seconds < 0)
         seconds = 0x7fffffff;
-	
+
     t.tv_sec  = seconds;
     t.tv_nsec = 0;
-	
+
     if ( !nanosleep( &t, &t ) )
 		return 0;
-	
+
     if ( errno == EINTR )
         return t.tv_sec;
-	
+
     return -1;
 }
 
@@ -401,18 +404,18 @@ int fcntl(int fd, int cmd, ...)
 {
     va_list ap;
     void * arg;
-	
+
     va_start(ap, cmd);
     arg = va_arg(ap, void *);
     va_end(ap);
-	
+
     return fcntl64$LINUX(fd, cmd, arg);
 }
 
 ssize_t pread(int fd, void *buf, size_t nbytes, off_t offset)
 {
 	unistd_log("pread");
-	
+
     return pread64$LINUX(fd, buf, nbytes, offset);
 }
 
@@ -423,10 +426,10 @@ ssize_t pread(int fd, void *buf, size_t nbytes, off_t offset)
 key_t  ftok(const char*  path, int  id)
 {
     struct stat   st;
-	
+
     if ( lstat(path, &st) < 0 )
         return -1;
-	
+
     return (key_t)( (st.st_ino & 0xffff) | ((st.st_dev & 0xff) << 16) | ((id & 255) << 24) );
 }
 
@@ -444,7 +447,7 @@ char *getcwd(char *buf, size_t size)
 	}
 	else {
 		unistd_log("getcwd: non posix extension version");
-		
+
 		getcwd$LINUX(buf, size);
 		return NULL;
 	}
@@ -457,10 +460,10 @@ char *getcwd(char *buf, size_t size)
 off_t lseek64(int fd, off_t off, int whence)
 {
     off_t  result;
-	
+
     if (llseek$LINUX(fd, (unsigned long)(off >> 32),(unsigned long)(off), &result, whence) < 0 )
         return -1;
-	
+
     return result;
 }
 
@@ -469,11 +472,11 @@ int open(const char *pathname, int flags, ...)
 {
     mode_t mode = 0;
 	int uflags = 0;
-	
+
 	//OSLog("OPEN: %s", pathname);
-	
+
     uflags |= LX_O_LARGEFILE;
-	
+
 	/*
 		A painful process of converting Darwin flags to Linux flags.
 	 */
@@ -490,16 +493,16 @@ int open(const char *pathname, int flags, ...)
 	convertFlag(O_SYNC, LX_O_SYNC);
 	convertFlag(O_APPEND, LX_O_APPEND);
 	convertFlag(O_NOFOLLOW, LX_O_NOFOLLOW);
-	
+
     if (uflags & O_CREAT)
     {
         va_list  args;
-		
+
         va_start(args, flags);
         mode = (mode_t) va_arg(args, int);
         va_end(args);
     }
-	
+
     return open$LINUX(pathname, uflags, mode);
 }
 

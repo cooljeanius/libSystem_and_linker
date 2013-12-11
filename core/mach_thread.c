@@ -16,7 +16,9 @@
 #include <sys/resource.h>
 #include <sys/sysctl.h>
 #include <sys/queue.h>
+#ifdef HAVE_MACHINE_VMPARAM_H
 #include <machine/vmparam.h>
+#endif
 #include <mach/vm_statistics.h>
 #include <mach/mach.h>
 #include <signal.h>
@@ -77,7 +79,7 @@ int
 sysctl(int *name, u_int namelen, void *oldp, size_t *oldlenp, void *newp, size_t newlen)
 {
 	OSLog("sysctl(%s): not implemented!", name);
-	
+
 	return 0;
 }
 
@@ -146,7 +148,7 @@ kern_return_t thread_create_running
  thread_state_t new_state,
  mach_msg_type_number_t new_stateCnt,
  thread_act_t *child_act
- ) 
+ )
 {
 	not_implemented();
 }

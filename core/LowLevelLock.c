@@ -45,9 +45,9 @@ int lll_futex_timed_wait(OSLowLock* futex,
 		If this is ever called in single threaded mode, the
 		application will hang up (as this will become a deadlock).
 	 */
-	
+
 	//OSLog("lll_futex_timed_wait: %p", futex);
-	
+
 	return futex$LINUX(futex,
 					   FUTEX_WAIT,
 					   value,
@@ -78,7 +78,7 @@ int lll_futex_wake(OSLowLock* futex,
 void lll_lock_wait(OSLowLock* futex) {
 	do {
 		int old = OSCompareAndExchangeInt(futex, 2, 1);
-		
+
 		if (old != 0) {
 			lll_futex_wait(futex, 2);
 		}
@@ -91,7 +91,7 @@ int lll_trylock(OSLowLock* futex) {
 }
 
 void lll_unlock(OSLowLock* futex) {
-	//OSLog("lll_unlock: %p", futex);
+	OSLog("lll_unlock: %p", futex);
 	int old = OSAtomicExchange(futex, 0);
 	if (__builtin_expect(old > 1, 0)) {
 		lll_futex_wake(futex, 1);
@@ -99,7 +99,7 @@ void lll_unlock(OSLowLock* futex) {
 }
 
 void lll_lock(OSLowLock* futex) {
-	//OSLog("lll_lock: %p", futex);
+	OSLog("lll_lock: %p", futex);
 	if (__builtin_expect(OSCompareAndExchangeInt(futex, 1, 0), 0)) {
 		lll_lock_wait(futex);
 	}

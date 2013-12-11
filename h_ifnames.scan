@@ -1,0 +1,8 @@
+_BSD_COMPAT_H_ ./BSDCompat.h
+__ARM_EABI__ ./NRSyscall.h
+__ASM_ARM_UNISTD_H ./NRSyscall.h
+__KERNEL__ ./NRSyscall.h
+__NS_SYSTEM_DIRECTORIES_H__ ./NSSystemDirectories.h
+__cplusplus ./NSSystemDirectories.h
+__thumb__ ./NRSyscall.h
+core_kernelrpc_h ./kernelrpc.h

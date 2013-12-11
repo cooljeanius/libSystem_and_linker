@@ -13,6 +13,13 @@
 
 #if !_ARCH_PPC
 
+#ifdef HAVE_MATH_H
+#include <math.h>
+#endif
+#ifdef HAVE_STDINT_H
+#include <stdint.h>
+#endif
+
 #include "int_lib.h"
 #include "int_math.h"
 
@@ -60,4 +67,4 @@ __divxc3(long double __a, long double __b, long double __c, long double __d)
     return z;
 }
 
-#endif
+#endif /* !_ARCH_PPC */

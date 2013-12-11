@@ -95,8 +95,9 @@
 #define mutex_lock(x) pthread_mutex_lock(x)
 #define mutex_unlock(x) pthread_mutex_unlock(x)
 
-
+#include <stdint.h>
 #include <sys/cdefs.h>
+#include <sys/types.h>
 #if defined(LIBC_SCCS) && !defined(lint)
 //__RCSID("$NetBSD: strtod.c,v 1.45.2.1 2005/04/19 13:35:54 tron Exp $");
 #endif /* LIBC_SCCS and not lint */
@@ -107,7 +108,11 @@
     defined(__powerpc__) || defined(__sh__) || defined(__x86_64__) || \
     defined(__hppa__) || \
     (defined(__arm__) && defined(__VFP_FP__))
+#ifdef HAVE_ENDIAN_H
 #include <endian.h>
+#else
+#include <libkern/OSByteOrder.h>
+#endif /* HAVE_ENDIAN_H */
 #if BYTE_ORDER == BIG_ENDIAN
 #define IEEE_BIG_ENDIAN
 #else

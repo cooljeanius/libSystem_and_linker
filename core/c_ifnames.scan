@@ -1,0 +1,232 @@
+ABORT ./dlmalloc.c
+ABORT_ON_ASSERT_FAILURE ./dlmalloc.c
+ACQUIRE_MALLOC_GLOBAL_LOCK ./dlmalloc.c
+AF_LINK ./gen_uuid.c
+ALL_STATE ./localtime.c
+ALTZONE ./localtime.c ./strftime.c
+ANDROID_CHANGES ./strtod.c
+BIG_ENDIAN ./strtod.c
+BSD ./dlmalloc.c
+BUILDING_VARIANT ./getopt.c ./pthread.c ./pthread_cond.c ./pthread_mutex.c ./pthread_rwlock.c ./telldir-fbsd.c
+BYTE_ORDER ./strtod.c
+BitScanForward ./dlmalloc.c
+CLSIZE ./dlmalloc.c
+CMUCS ./localtime.c
+COND_MTX_WAITQUEUEMOVE ./pthread_cond.c
+CONST ./strtod.c
+CORRUPTION_ERROR_ACTION ./dlmalloc.c
+Check_FLT_ROUNDS ./strtod.c
+DARWIN ./dlmalloc.c
+DEBUG ./darwin_ioctl.c ./dlmalloc.c ./gdtoa-dmisc.c ./gdtoa-misc.c ./strtod.c
+DEFAULT_GRANULARITY ./dlmalloc.c
+DEFAULT_MMAP_THRESHOLD ./dlmalloc.c
+DEFAULT_TRIM_THRESHOLD ./dlmalloc.c
+DGUX ./dlmalloc.c
+DIRECT_MMAP ./dlmalloc.c
+DLMALLOC_EXPORT ./dlmalloc.c
+DLMALLOC_VERSION ./dlmalloc.c
+DYLD_STATIC_LIBC_BUILD ./pthread_tsd.c
+EOVERFLOW ./asctime.c
+EXEC_PAGESIZE ./dlmalloc.c
+FOOTERS ./dlmalloc.c
+FORCEINLINE ./dlmalloc.c
+FTS_WHITEOUT ./fts.c
+GDTOA_NON_PEDANTIC_NANCHECK ./gdtoa-hexnan.c
+HAVE_ASL_IPC_H ./_simple.c
+HAVE_CRT_EXTERNS_H ./Environ.c
+HAVE_ENDIAN_H ./strtod.c
+HAVE_GETPAGESIZE ./dlmalloc.c
+HAVE_MACHINE_CPU_CAPABILITIES_H ./pthread.c
+HAVE_MACHINE_VMPARAM_H ./mach_thread.c ./pthread_cancelable.c
+HAVE_MMAP ./dlmalloc.c
+HAVE_MORECORE ./dlmalloc.c
+HAVE_MREMAP ./dlmalloc.c
+HAVE_NETINET_IN_H ./gen_uuid.c
+HAVE_NET_IF_DL_H ./gen_uuid.c
+HAVE_NET_IF_H ./gen_uuid.c
+HAVE_SA_LEN ./gen_uuid.c
+HAVE_SRANDOM ./gen_uuid.c
+HAVE_STDINT_H ./thread_setup.c
+HAVE_STDLIB_H ./gen_uuid.c
+HAVE_SYS_IOCTL_H ./gen_uuid.c
+HAVE_SYS_SOCKET_H ./gen_uuid.c
+HAVE_SYS_SOCKIO_H ./gen_uuid.c
+HAVE_SYS_TYPES_H ./thread_setup.c
+HAVE_UNISTD_H ./gen_uuid.c
+HAVE_USR_INCLUDE_MALLOC_H ./dlmalloc.c
+HAVE_VARARGS_H ./darwin_ioctl.c ./unistd.c
+Honor_FLT_ROUNDS ./gdtoa-strtof.c ./gdtoa-strtopdd.c
+IBM ./gdtoa-misc.c ./gdtoa-smisc.c ./gdtoa-strtodg.c ./strtod.c
+IEEE_Arith ./gdtoa-misc.c ./strtod.c
+IEEE_BIG_ENDIAN ./strtod.c
+IEEE_LITTLE_ENDIAN ./strtod.c
+IMPRECISE_INEXACT ./gdtoa-strtodg.c
+INFNAN_CHECK ./gdtoa-smisc.c ./gdtoa-strtodg.c
+INSECURE ./dlmalloc.c
+Inaccurate_Divide ./gdtoa-strtodg.c ./strtod.c
+Just_16 ./strtod.c
+KITCHEN_SINK ./strftime.c
+KR_headers ./gdtoa-dmisc.c ./gdtoa-gethex.c ./gdtoa-gmisc.c ./gdtoa-hd_init.c ./gdtoa-hexnan.c ./gdtoa-misc.c ./gdtoa-smisc.c ./gdtoa-strtoIg.c ./gdtoa-strtodg.c ./gdtoa-strtof.c ./gdtoa-strtopdd.c ./gdtoa-sum.c ./strtod.c
+LACKS_ERRNO_H ./dlmalloc.c
+LACKS_FCNTL_H ./dlmalloc.c
+LACKS_SCHED_H ./dlmalloc.c
+LACKS_STDLIB_H ./dlmalloc.c
+LACKS_STRINGS_H ./dlmalloc.c
+LACKS_STRING_H ./dlmalloc.c
+LACKS_SYS_MMAN_H ./dlmalloc.c
+LACKS_SYS_PARAM_H ./dlmalloc.c
+LACKS_SYS_TYPES_H ./dlmalloc.c
+LACKS_TIME_H ./dlmalloc.c
+LACKS_UNISTD_H ./dlmalloc.c
+LIBC_SCCS ./abs.c ./atof-fbsd.c ./closedir-fbsd.c ./getbsize.c ./getopt.c ./inet_pton.c ./merge-fbsd.c ./none.c ./opendir-fbsd.c ./readdir-fbsd.c ./scandir-fbsd.c ./siglist.c ./stpcpy.c ./strcasecmp-fbsd.c ./strftime.c ./strmode.c ./strsignal-fbsd.c ./strtod.c ./telldir-fbsd.c
+LNAMES ./engine.c
+MALLINFO_FIELD_TYPE ./dlmalloc.c
+MALLOC ./strtod.c
+MALLOC_ALIGNMENT ./dlmalloc.c
+MALLOC_FAILURE_ACTION ./dlmalloc.c
+MALLOC_INSPECT_ALL ./dlmalloc.c
+MAP_ANON ./dlmalloc.c
+MAP_ANONYMOUS ./dlmalloc.c
+MAX_RELEASE_CHECK_RATE ./dlmalloc.c
+MMAP ./dlmalloc.c
+MMAP_CLEARS ./dlmalloc.c
+MORECORE ./dlmalloc.c
+MORECORE_CANNOT_TRIM ./dlmalloc.c
+MORECORE_CONTIGUOUS ./dlmalloc.c
+MREMAP ./dlmalloc.c
+MSPACES ./dlmalloc.c
+MULTIPLE_THREADS ./gdtoa-dmisc.c ./gdtoa-misc.c
+MUNMAP ./dlmalloc.c
+NATURAL ./merge-fbsd.c
+NBPC ./dlmalloc.c
+NBPG ./dlmalloc.c
+NDEBUG ./engine.c ./regcomp.c
+NEED_GLOBAL_LOCK_INIT ./dlmalloc.c
+NEVERINCOMPAGE ./pthread_mutex.c
+NOID ./asctime.c ./localtime.c ./strftime.c
+NOINLINE ./dlmalloc.c
+NOTYET ./pthread_mutex.c ./pthread_rwlock.c
+NO_ERRNO ./gdtoa-gethex.c ./gdtoa-strtodg.c
+NO_HEX_FP ./gdtoa-strtodg.c
+NO_LOCALE_CACHE ./gdtoa-gethex.c ./gdtoa-strtodg.c
+NO_MALLINFO ./dlmalloc.c
+NO_MALLOC_STATS ./dlmalloc.c
+NO_RUN_TIME_WARNINGS_ABOUT_YEAR_2000_PROBLEMS_THANK_YOU ./strftime.c
+NO_SEGMENT_TRAVERSAL ./dlmalloc.c
+NO_STRING_H ./gdtoa-misc.c
+No_Hex_NaN ./gdtoa-strtodg.c
+No_leftright ./strtod.c
+ONLY_MSPACES ./dlmalloc.c
+O_BINARY ./localtime.c
+Omit_Private_Memory ./gdtoa-misc.c
+PAGESIZE ./dlmalloc.c
+PCHARDONE ./engine.c
+PCTS ./localtime.c
+PLOCKSTAT ./pthread_cond.c ./pthread_mutex.c ./pthread_rwlock.c
+POSIX_MISTAKE ./regcomp.c
+POSTACTION ./dlmalloc.c
+PREACTION ./dlmalloc.c
+PRIVATE_MEM ./gdtoa-misc.c
+PROCEED_ON_ERROR ./dlmalloc.c
+PR_5243343 ./pthread_cond.c ./pthread_mutex.c
+PTHREAD_MUTEX_RECURSIVE ./dlmalloc.c
+PTH_LISTTRACE ./pthread.c
+PTH_TRACE ./pthread.c
+Pack_16 ./gdtoa-smisc.c ./gdtoa-strtodg.c
+Pack_32 ./gdtoa-dmisc.c ./gdtoa-misc.c ./gdtoa-smisc.c ./gdtoa-strtodg.c ./gdtoa-sum.c ./strtod.c
+REALLOC_ZERO_BYTES_FREES ./dlmalloc.c
+REDEBUG ./engine.c ./regcomp.c ./regexec.c
+RELEASE_MALLOC_GLOBAL_LOCK ./dlmalloc.c
+RND_PRODQUOT ./gdtoa-strtodg.c ./strtod.c
+ROUND_BIASED ./strtod.c
+SECSPERREPEAT_BITS ./localtime.c
+SINGLEUSE ./telldir-fbsd.c
+SIOCGENADDR ./gen_uuid.c
+SIOCGIFHWADDR ./gen_uuid.c
+SNAMES ./engine.c
+STD_INSPIRED ./localtime.c
+STRUCT_MALLINFO_DECLARED ./dlmalloc.c
+S_IFIFO ./strmode.c
+S_IFWHT ./strmode.c
+Sudden_Underflow ./gdtoa-misc.c ./gdtoa-strtopdd.c ./strtod.c
+TM_GMTOFF ./localtime.c ./strftime.c
+TM_ZONE ./localtime.c ./strftime.c
+TZDEFRULESTRING ./localtime.c
+TZNAME_MAX ./localtime.c
+TZ_ABBR_CHAR_SET ./localtime.c
+TZ_ABBR_ERR_CHAR ./localtime.c
+TZ_ABBR_MAX_LEN ./localtime.c
+TZ_STRLEN_MAX ./localtime.c
+ULLong ./gdtoa-dmisc.c ./gdtoa-misc.c
+ULONG_MAX ./arc4random.c
+USAGE_ERROR_ACTION ./dlmalloc.c
+USE_BUILTIN_FFS ./dlmalloc.c
+USE_COMPAGE ./pthread_mutex.c
+USE_DEV_RANDOM ./dlmalloc.c
+USE_DL_PREFIX ./dlmalloc.c
+USE_LOCALE ./gdtoa-gethex.c ./gdtoa-strtodg.c
+USE_LOCKS ./dlmalloc.c
+USE_RECURSIVE_LOCKS ./dlmalloc.c
+USE_SPIN_LOCKS ./dlmalloc.c
+USG_COMPAT ./localtime.c ./strftime.c
+UUID_UNPARSE_DEFAULT_UPPER ./unparse.c
+Unsigned_Shifts ./strtod.c
+VARIANT_CANCELABLE ./pthread_cancelable.c
+VARIANT_DYLD ./_simple.c
+VAX ./gdtoa-misc.c ./gdtoa-strtodg.c ./strtod.c
+VM_PAGE_SIZE ./_simple.c
+WILDABBR ./localtime.c
+WIN32 ./dlmalloc.c
+WQ_DEBUG ./pthread.c
+WQ_LISTTRACE ./pthread.c
+WQ_TRACE ./pthread.c ./pthread_cancelable.c
+WRONG ./localtime.c
+XPG4_1994_04_09 ./strftime.c
+YEAR_2000_NAME ./strftime.c
+_DARWIN ./dlmalloc.c
+_KSYN_TRACE_ ./pthread_cond.c ./pthread_mutex.c ./pthread_rwlock.c
+_MSC_VER ./dlmalloc.c
+_M_AMD64 ./dlmalloc.c
+_OBJC_PAGE_BASE_ADDRESS ./pthread.c
+_SC_PAGESIZE ./dlmalloc.c
+_SC_PAGE_SIZE ./dlmalloc.c
+_WIN32 ./dlmalloc.c
+_WIN32_WCE ./dlmalloc.c
+__BLOCKS__ ./fts.c
+__DARWIN_64_BIT_INO_T ./opendir-fbsd.c ./readdir-fbsd.c ./telldir-fbsd.c
+__DARWIN_UNIX03 ./closedir-fbsd.c ./getopt.c ./pthread.c ./pthread_cancelable.c ./pthread_cond.c ./pthread_mutex.c ./pthread_rwlock.c ./telldir-fbsd.c
+__FreeBSD__ ./dlmalloc.c
+__GNUC_MINOR__ ./dlmalloc.c
+__GNUC__ ./arc4random.c ./asctime.c ./dlmalloc.c
+__INTEL_COMPILER ./dlmalloc.c
+__LP64__ ./pthread_cond.c ./pthread_mutex.c ./pthread_rwlock.c
+__MATH_H__ ./strtod.c
+__NetBSD__ ./dlmalloc.c
+__OpenBSD__ ./dlmalloc.c
+__SVR4 ./dlmalloc.c
+__USE_GNU ./dlmalloc.c
+__VFP_FP__ ./strtod.c
+__alpha__ ./strtod.c
+__arm__ ./_simple.c ./pthread.c ./strtod.c ./thread_setup.c ./unistd.c
+__cplusplus ./dlmalloc.c ./strtod.c
+__hppa__ ./strtod.c
+__i386__ ./dlmalloc.c ./pthread.c ./pthread_cond.c ./pthread_mutex.c ./pthread_rwlock.c ./strtod.c ./thread_setup.c
+__m68k__ ./strtod.c
+__mips__ ./strtod.c
+__no_acl__ ./acl_file.c
+__ns32k__ ./strtod.c
+__powerpc__ ./strtod.c
+__ppc64__ ./pthread.c ./thread_setup.c
+__ppc__ ./pthread.c ./thread_setup.c
+__sh__ ./strtod.c
+__sparc__ ./strtod.c
+__sun ./dlmalloc.c
+__vax__ ./strtod.c
+__x86_64__ ./dlmalloc.c ./pthread.c ./pthread_cond.c ./pthread_mutex.c ./pthread_rwlock.c ./strtod.c ./thread_setup.c
+assert ./dlmalloc.c
+enablePrettyColors ./OSLog.c
+lint ./abs.c ./asctime.c ./atof-fbsd.c ./closedir-fbsd.c ./getbsize.c ./getopt.c ./inet_pton.c ./localtime.c ./merge-fbsd.c ./none.c ./opendir-fbsd.c ./readdir-fbsd.c ./scandir-fbsd.c ./siglist.c ./stpcpy.c ./strcasecmp-fbsd.c ./strftime.c ./strmode.c ./strsignal-fbsd.c ./strtod.c ./strtofflags.c ./telldir-fbsd.c
+linux ./dlmalloc.c
+malloc_getpagesize ./dlmalloc.c
+max ./gen_uuid.c
+notdef ./fts.c

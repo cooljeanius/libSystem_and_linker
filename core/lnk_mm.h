@@ -11,15 +11,16 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <unistd.h>
+#include <stdint.h>
 
 namespace lnk {
 	namespace mm {
 		/* reserve a memory range */
 		void* reserve(size_t sz);
-		
+
 		/* wire in a file range */
 		void* wire(int fd, void* addr, size_t vmsize, uint32_t fileoff);
-		
+
 		/* wire anonymous */
 		void* wire_anon(void* addr, size_t vmsize);
 	}

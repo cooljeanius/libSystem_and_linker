@@ -1,4 +1,4 @@
-*.DS_Store
+*DS_Store*
 *.build
 build/*
 build
@@ -7,3 +7,12 @@ build
 core/.DS_Store
 core/arm_math/.DS_Store
 core/Compiler_RT/.DS_Store
+*.log
+*.cache
+*.log
+*~
+*.o
+confdefs.h
+*.status
+config.h
+stamp-*

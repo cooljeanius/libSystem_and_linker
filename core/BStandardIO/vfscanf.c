@@ -36,7 +36,9 @@
 #include <stdarg.h>
 #include <stddef.h>
 #include <stdio.h>
+#include <stdint.h>
 #include <stdlib.h>
+#include <sys/types.h>
 #include "local.h"
 
 #ifdef FLOATING_POINT
@@ -238,8 +240,8 @@ literal:
 #ifdef FLOATING_POINT
 		case 'E':
 		case 'G':
-		case 'e': 
-		case 'f': 
+		case 'e':
+		case 'f':
 		case 'g':
 			c = CT_FLOAT;
 			break;
